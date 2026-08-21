@@ -42,18 +42,18 @@ export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings }) => {
         <div className="flex flex-col gap-4 w-full sm:w-64">
           <button 
             onClick={onPlay}
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white text-xl font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+            className="flex items-center justify-center gap-3 bg-gradient-to-r from-fuchsia-500 to-cyan-500 hover:from-fuchsia-400 hover:to-cyan-400 text-white text-xl font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
           >
             <Play fill="currentColor" size={24} />
-            PLAY
+            START GAME
           </button>
           
           <button 
             onClick={onSettings}
-            className="flex items-center justify-center gap-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-lg font-semibold py-3 px-6 rounded-xl shadow border border-slate-200 dark:border-slate-700 transition-all"
+            className="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-white text-lg font-bold py-3 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all"
           >
             <Settings size={20} />
-            Settings
+            SETTINGS
           </button>
         </div>
       </div>

@@ -6,6 +6,7 @@ export type CardData = {
   itemId: string; // The ID of the category item it represents
   name: string;
   icon: string;
+  color?: string; // Color gradient
   isFlipped: boolean;
   isMatched: boolean;
 };
@@ -39,7 +40,7 @@ export const Card: React.FC<CardProps> = ({ card, onClick, disabled, reducedMoti
 
   return (
     <motion.div
-      className={`relative w-full h-full cursor-pointer perspective-1000 ${
+      className={`relative w-full h-full aspect-square cursor-pointer perspective-1000 ${
         (disabled || card.isFlipped || card.isMatched) ? 'cursor-default' : 'hover:scale-105 transition-transform'
       }`}
       onClick={handleClick}
@@ -48,19 +49,19 @@ export const Card: React.FC<CardProps> = ({ card, onClick, disabled, reducedMoti
       animate={card.isMatched ? "matched" : "initial"}
     >
       <motion.div
-        className="w-full h-full relative transform-style-3d transition-transform duration-500 rounded-xl shadow-md"
+        className="w-full h-full relative transform-style-3d transition-transform duration-500 rounded-3xl shadow-lg"
         animate={{ rotateY: card.isFlipped || card.isMatched ? 180 : 0 }}
         transition={springConfig}
       >
         {/* Front of card (shown when flipped) */}
-        <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-white dark:bg-slate-800 rounded-xl flex flex-col items-center justify-center border-2 border-primary/20">
-          <span className="text-4xl md:text-5xl lg:text-6xl drop-shadow-sm">{card.icon}</span>
+        <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-white dark:bg-slate-800 rounded-3xl flex flex-col items-center justify-center border-4 border-primary/10 shadow-inner">
+          <span className="text-5xl md:text-6xl lg:text-7xl drop-shadow-sm">{card.icon}</span>
         </div>
 
         {/* Back of card (shown when face down) */}
-        <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-primary to-indigo-600 rounded-xl border-2 border-white/10 flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full border-4 border-white/20 flex items-center justify-center">
-            <div className="w-6 h-6 rounded-full bg-white/20"></div>
+        <div className={`absolute w-full h-full backface-hidden bg-gradient-to-br ${card.color || 'from-primary to-indigo-600'} rounded-3xl border-2 border-white/20 flex items-center justify-center shadow-md`}>
+          <div className="w-16 h-16 rounded-full border-4 border-white/30 flex items-center justify-center bg-black/5">
+            <div className="w-8 h-8 rounded-full bg-white/30"></div>
           </div>
         </div>
       </motion.div>

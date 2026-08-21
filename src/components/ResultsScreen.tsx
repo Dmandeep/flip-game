@@ -14,7 +14,12 @@ type Props = {
 
 export const ResultsScreen: React.FC<Props> = ({ result, onPlayAgain, onChangeCategory, onChangeDifficulty, onHome }) => {
   
+  const savedRef = React.useRef(false);
+
   useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    
     // Update stats
     const stats = StorageUtils.getStats();
     StorageUtils.updateStats({
