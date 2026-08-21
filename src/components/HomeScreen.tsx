@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Play, Settings } from 'lucide-react';
 
@@ -7,54 +6,121 @@ type Props = {
   onSettings: () => void;
 };
 
+/* ── Floating particle emojis ─────────────────────────────────────────────── */
+const FLOATERS = [
+  { emoji: '🌸', top: '8%',  left: '8%',  size: '4rem', delay: 0,   dur: 4.2 },
+  { emoji: '⭐', top: '14%', right: '10%', size: '3.5rem', delay: 1,  dur: 5.1 },
+  { emoji: '🌙', bottom: '22%', left: '12%', size: '4rem', delay: 0.5, dur: 6.0 },
+  { emoji: '✨', bottom: '14%', right: '8%', size: '3.5rem', delay: 2,  dur: 4.6 },
+  { emoji: '🦋', top: '52%', left: '4%',  size: '3rem', delay: 1.5, dur: 5.5 },
+  { emoji: '🍃', top: '36%', right: '4%', size: '3rem', delay: 0.8, dur: 4.1 },
+  { emoji: '💫', top: '28%', left: '20%', size: '2.5rem', delay: 1.2, dur: 3.8 },
+  { emoji: '🎴', bottom: '35%', right: '18%', size: '2.5rem', delay: 2.5, dur: 5.0 },
+];
+
+/* ── Demo card strip on the home screen ──────────────────────────────────── */
+const DEMO_CARDS = ['🎴', '🃏', '🎴', '🃏'];
+const DEMO_COLORS = [
+  'from-violet-500 to-indigo-600',
+  'from-fuchsia-500 to-pink-600',
+  'from-sky-500 to-blue-600',
+  'from-emerald-500 to-teal-600',
+];
+
 export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings }) => {
   return (
-    <motion.div 
-      className="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-background to-slate-100 dark:to-slate-900"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+    <motion.div
+      className="flex-1 flex flex-col items-center justify-center p-6 relative z-10 min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.35 }}
     >
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Subtle background elements */}
-        <div className="absolute top-10 left-10 text-6xl opacity-10 animate-pulse">🍎</div>
-        <div className="absolute bottom-20 right-20 text-6xl opacity-10 animate-pulse" style={{ animationDelay: '1s' }}>🐶</div>
-        <div className="absolute top-1/4 right-1/4 text-6xl opacity-10 animate-pulse" style={{ animationDelay: '2s' }}>🚗</div>
-        <div className="absolute bottom-1/3 left-1/4 text-6xl opacity-10 animate-pulse" style={{ animationDelay: '0.5s' }}>🍕</div>
+      {/* ── Background floating emojis ─────────────────────────────── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {FLOATERS.map((f, i) => (
+          <motion.div
+            key={i}
+            className="absolute opacity-20 select-none"
+            style={{ fontSize: f.size, top: f.top, left: (f as any).left, right: (f as any).right, bottom: (f as any).bottom }}
+            animate={{ y: [0, -14, 0], rotate: [0, i % 2 === 0 ? 10 : -10, 0] }}
+            transition={{ duration: f.dur, delay: f.delay, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            {f.emoji}
+          </motion.div>
+        ))}
       </div>
 
-      <div className="z-10 flex flex-col items-center text-center max-w-lg w-full">
-        <motion.div 
-          className="mb-12 relative"
-          initial={{ scale: 0.8 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', bounce: 0.5 }}
+      {/* ── Content ───────────────────────────────────────────────── */}
+      <div className="z-10 flex flex-col items-center text-center max-w-lg w-full gap-10">
+
+        {/* Title */}
+        <motion.div
+          className="relative"
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.05 }}
         >
-          <div className="absolute inset-0 blur-3xl bg-primary/30 rounded-full"></div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-600 drop-shadow-sm mb-4">
-            MEMORY<br/>FLIP
+          {/* Glow blob behind title */}
+          <div className="absolute inset-0 blur-3xl bg-fuchsia-500/25 rounded-full scale-[1.6] pointer-events-none" />
+
+          <h1 className="relative text-6xl md:text-8xl font-extrabold tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-br from-fuchsia-300 via-pink-300 to-cyan-300 drop-shadow-sm mb-3">
+            MEMORY<br />FLIP
           </h1>
-          <p className="text-xl md:text-2xl font-medium text-slate-600 dark:text-slate-300">
-            Flip. Match. Remember.
-          </p>
+          <motion.p
+            className="relative text-lg md:text-xl font-semibold text-purple-200/80 tracking-widest"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            ✨ Flip. Match. Remember. ✨
+          </motion.p>
         </motion.div>
 
-        <div className="flex flex-col gap-4 w-full sm:w-64">
-          <button 
+        {/* Demo card row */}
+        <div className="flex gap-3 justify-center">
+          {DEMO_CARDS.map((icon, i) => (
+            <motion.div
+              key={i}
+              className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br ${DEMO_COLORS[i]} border-2 border-white/20 flex items-center justify-center shadow-xl`}
+              initial={{ opacity: 0, y: 20, rotateY: 180 }}
+              animate={{ opacity: 1, y: 0, rotateY: 0 }}
+              transition={{ delay: 0.3 + i * 0.1, type: 'spring', stiffness: 220, damping: 22 }}
+              whileHover={{ scale: 1.15, rotateZ: 6, y: -6 }}
+              style={{ perspective: '600px' }}
+            >
+              <span style={{ fontSize: '1.8rem' }}>{icon}</span>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Buttons */}
+        <div className="flex flex-col gap-4 w-full sm:w-72">
+          <motion.button
             onClick={onPlay}
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-fuchsia-500 to-cyan-500 hover:from-fuchsia-400 hover:to-cyan-400 text-white text-xl font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(236,72,153,0.55)' }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center justify-center gap-3 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-500 text-white text-xl md:text-2xl font-black py-5 px-10 rounded-full shadow-[0_0_28px_rgba(236,72,153,0.4)] transition-shadow"
           >
-            <Play fill="currentColor" size={24} />
+            <Play fill="currentColor" size={26} />
             START GAME
-          </button>
-          
-          <button 
+          </motion.button>
+
+          <motion.button
             onClick={onSettings}
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-white text-lg font-bold py-3 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 32px rgba(139,92,246,0.5)' }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center justify-center gap-3 bg-gradient-to-r from-violet-600 to-indigo-700 text-white text-base md:text-lg font-bold py-4 px-8 rounded-full shadow-[0_0_18px_rgba(139,92,246,0.3)] transition-shadow"
           >
             <Settings size={20} />
-            SETTINGS
-          </button>
+            SETTINGS & STATS
+          </motion.button>
         </div>
       </div>
     </motion.div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
 import { categories } from '../data/categories';
@@ -9,46 +8,84 @@ type Props = {
   onBack: () => void;
 };
 
+const categoryGradients: Record<string, string> = {
+  all:      'from-fuchsia-500 to-cyan-500',
+  fruits:   'from-rose-500 to-orange-500',
+  animals:  'from-emerald-500 to-teal-500',
+  vehicles: 'from-blue-500 to-indigo-600',
+  food:     'from-amber-500 to-orange-600',
+};
+
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+  exit: { transition: { staggerChildren: 0.03, staggerDirection: -1 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 28, scale: 0.92 },
+  show:   { opacity: 1, y: 0,  scale: 1, transition: { type: 'spring', stiffness: 260, damping: 24 } },
+  exit:   { opacity: 0, y: -12, scale: 0.94, transition: { duration: 0.18 } },
+};
+
 export const CategorySelection: React.FC<Props> = ({ onSelect, onBack }) => {
   return (
-    <motion.div 
-      className="flex-1 flex flex-col p-6 max-w-5xl mx-auto w-full"
-      initial={{ opacity: 0, x: 20 }}
+    <motion.div
+      className="flex-1 flex flex-col p-6 max-w-5xl mx-auto w-full relative z-10"
+      initial={{ opacity: 0, x: 30 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      exit={{ opacity: 0, x: -30 }}
+      transition={{ duration: 0.28 }}
     >
       <header className="flex items-center mb-8 mt-4">
-        <button 
+        <motion.button
           onClick={onBack}
-          className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors mr-4"
+          whileHover={{ scale: 1.12, x: -3 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-2 rounded-full hover:bg-white/10 transition-colors mr-4 text-purple-200"
         >
           <ChevronLeft size={28} />
-        </button>
+        </motion.button>
         <div>
-          <h2 className="text-3xl font-bold">Select Category</h2>
-          <p className="text-slate-500 dark:text-slate-400">Choose a theme for your game</p>
+          <h2 className="text-3xl font-bold text-white">Select Category</h2>
+          <p className="text-purple-300/70">Choose a theme for your game</p>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {categories.map((cat, index) => (
-          <motion.button
-            key={cat.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            onClick={() => onSelect(cat)}
-            className="group relative flex flex-col items-center text-center p-6 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:border-primary/30 transition-all duration-300 overflow-hidden"
-          >
-            <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-            <div className={`w-20 h-20 flex items-center justify-center text-4xl rounded-2xl bg-gradient-to-br ${cat.color} text-white shadow-inner mb-4 group-hover:scale-110 transition-transform duration-300`}>
-              {cat.icon}
-            </div>
-            <h3 className="text-xl font-bold mb-2">{cat.name}</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{cat.description}</p>
-          </motion.button>
-        ))}
-      </div>
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        exit="exit"
+      >
+        {categories.map(cat => {
+          const grad = categoryGradients[cat.id] || cat.color;
+          return (
+            <motion.button
+              key={cat.id}
+              variants={cardVariants}
+              whileHover={{ scale: 1.05, y: -6, boxShadow: '0 16px 40px rgba(0,0,0,0.4)' }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onSelect(cat)}
+              className={`group relative flex flex-col items-center text-center p-8 bg-gradient-to-br ${grad} rounded-3xl shadow-lg border border-white/20 overflow-hidden transition-shadow duration-300`}
+            >
+              {/* Hover sheen */}
+              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300 rounded-3xl" />
+              {/* Icon */}
+              <motion.div
+                className="text-6xl mb-4 drop-shadow-lg z-10"
+                whileHover={{ rotate: [0, -8, 8, -4, 0], scale: 1.15 }}
+                transition={{ duration: 0.4 }}
+              >
+                {cat.icon}
+              </motion.div>
+              <h3 className="text-2xl font-bold mb-1 text-white z-10">{cat.name}</h3>
+              <p className="text-sm text-white/70 z-10">{cat.description}</p>
+            </motion.button>
+          );
+        })}
+      </motion.div>
     </motion.div>
   );
 };

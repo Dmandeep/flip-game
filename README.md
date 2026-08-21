@@ -1,32 +1,75 @@
-# React + TypeScript + Vite
+# 🃏 Memory Flip
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A beautiful anime-themed memory card-matching game built with **React**, **TypeScript**, **Tailwind CSS v4**, and **Framer Motion**.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 🎴 **Card matching gameplay** — flip cards to find matching pairs
+- 🎯 **4 difficulty levels** — Easy (4×4), Medium (5×4), Hard (6×6), Expert (8×6)
+- 🗂️ **4 categories** — Fruits, Animals, Vehicles, Food (+ Mixed)
+- 🔥 **Combo scoring** — chain matches to multiply your score
+- ⏱️ **Timer** — race against the clock
+- 📊 **Progress bar** — track pairs found vs total
+- 🔊 **Sound effects** — synthesized with the Web Audio API (no external files)
+- 💾 **Persistent stats** — best score, best time, best combo saved to localStorage
+- 🌙 **Dark / Light / System theme** support
+- ♿ **Reduced motion** accessibility option
+- 📱 **Fully responsive** — works on mobile and desktop
 
-## React Compiler
+## 🛠 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Tool | Purpose |
+|---|---|
+| React 19 | UI library |
+| TypeScript 6 | Type safety |
+| Vite 8 | Build tool |
+| Tailwind CSS v4 | Utility-first styling |
+| Framer Motion | Animations |
+| Lucide React | Icons |
+| Web Audio API | Synthesized sound effects |
 
-## Expanding the Oxlint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+```bash
+# Install dependencies
+npm install
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 🎮 How to Play
+
+1. **Start Game** → choose a category → choose difficulty
+2. Click cards to **flip** them
+3. Find **matching pairs** — matching cards are removed from the board
+4. Chain matches for a **combo multiplier** on your score
+5. **Win** when all pairs are found!
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # React UI components
+│   ├── Card.tsx         # Individual card with 3D flip animation
+│   ├── CategorySelection.tsx
+│   ├── DifficultySelection.tsx
+│   ├── GameScreen.tsx   # Main gameplay screen
+│   ├── HomeScreen.tsx
+│   ├── ResultsScreen.tsx
+│   └── SettingsScreen.tsx
+├── data/
+│   ├── categories.ts    # Category & item definitions
+│   └── difficulties.ts  # Grid size configs
+├── utils/
+│   ├── shuffle.ts       # Fisher-Yates shuffle
+│   ├── sound.ts         # Web Audio API sound effects
+│   └── storage.ts       # localStorage helpers
+└── App.tsx              # Screen state machine
+```
