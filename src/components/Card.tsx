@@ -51,7 +51,7 @@ export const Card: React.FC<CardProps> = ({
     : { type: 'spring' as const, stiffness: 500, damping: 25, mass: 1.5 };
 
   return (
-    <div className="relative w-full h-full aspect-[3/4] perspective-1000 select-none mx-auto group">
+    <div className="relative w-full h-full aspect-[3/4] perspective-1000 select-none mx-auto group" style={{ perspective: '1200px' }}>
       {/* ── TITAN LIGHTNING FLASH ───────────────────────────────────── */}
       <AnimatePresence>
         {card.isMatched && !reducedMotion && (
@@ -65,7 +65,8 @@ export const Card: React.FC<CardProps> = ({
       </AnimatePresence>
 
       <motion.div
-        className={`relative w-full h-full ${disabled || revealed ? 'cursor-default' : 'cursor-pointer'}`}
+        className={`relative w-full h-full transform-style-3d ${disabled || revealed ? 'cursor-default' : 'cursor-pointer'}`}
+        style={{ transformStyle: 'preserve-3d' }}
         onClick={handleClick}
         initial={{ opacity: 1, scale: 1, y: 0, rotateZ: 0, filter: "blur(0px)" }}
         whileHover={(!disabled && !revealed && !reducedMotion) ? { scale: 1.05 } : {}}
@@ -88,10 +89,11 @@ export const Card: React.FC<CardProps> = ({
         }
       >
         <motion.div
-          className="relative w-full h-full transform-style-3d shadow-2xl"
+          className="relative w-full h-full shadow-2xl"
           animate={{ rotateY: revealed ? 180 : 0 }}
           transition={flipTransition}
           style={{
+            transformStyle: 'preserve-3d',
             boxShadow: card.isMatched
               ? '0 0 50px rgba(253, 224, 71, 0.8)'
               : '0 10px 20px rgba(0,0,0,0.5)',
@@ -116,6 +118,7 @@ export const Card: React.FC<CardProps> = ({
             className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden texture-leather bg-[#3e2723]"
             style={{ 
               backfaceVisibility: 'hidden', 
+              WebkitBackfaceVisibility: 'hidden',
             }}
           >
             {/* The user's downloaded original logo */}
@@ -152,6 +155,7 @@ export const Card: React.FC<CardProps> = ({
             className={`absolute inset-0 ${!card.isMatched || reducedMotion ? 'texture-parchment' : ''}`}
             style={{ 
               backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)',
               borderRadius: '6px'
             }}

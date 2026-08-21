@@ -160,10 +160,12 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
             return (
               <motion.div
                 key={card.id}
+                layout
                 className="w-full h-full"
                 initial={settings.reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.8, y: 50 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ type: 'spring', damping: 20, delay: gameState === 'dealing' ? 0 : i * 0.05 }}
+                exit={settings.reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8, y: -50 }}
+                transition={{ type: 'spring', damping: 20, delay: settings.reducedMotion ? 0 : i * 0.05 }}
               >
                 <Card
                   card={{ ...card, isFlipped, isMatched }}

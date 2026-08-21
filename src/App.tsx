@@ -5,6 +5,7 @@ import { DifficultySelection } from './components/DifficultySelection';
 import { GameScreen } from './components/GameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { SettingsScreen } from './components/SettingsScreen';
+import { BackgroundAnimation } from './components/BackgroundAnimation';
 import type { Category } from './data/categories';
 import type { DifficultyLevel } from './data/difficulties';
 import { StorageUtils } from './utils/storage';
@@ -56,6 +57,7 @@ function App() {
     <div className="min-h-screen w-full relative overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
       {/* ── AOT Environment ─────────────────────────────────── */}
       <div className="aot-bg" />
+      <BackgroundAnimation />
       
       <AnimatePresence mode="wait">
         {currentScreen === 'home' && (
