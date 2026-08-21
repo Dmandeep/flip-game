@@ -8,12 +8,12 @@ type Props = {
   onBack: () => void;
 };
 
-const categoryGradients: Record<string, string> = {
-  all:      'from-fuchsia-500 to-cyan-500',
-  fruits:   'from-rose-500 to-orange-500',
-  animals:  'from-emerald-500 to-teal-500',
-  vehicles: 'from-blue-500 to-indigo-600',
-  food:     'from-amber-500 to-orange-600',
+const categoryGlows: Record<string, string> = {
+  all:      'shadow-[0_0_30px_rgba(192,38,211,0.3)] border-fuchsia-500/40 hover:border-fuchsia-400',
+  fruits:   'shadow-[0_0_30px_rgba(244,63,94,0.3)] border-rose-500/40 hover:border-rose-400',
+  animals:  'shadow-[0_0_30px_rgba(16,185,129,0.3)] border-emerald-500/40 hover:border-emerald-400',
+  vehicles: 'shadow-[0_0_30px_rgba(59,130,246,0.3)] border-blue-500/40 hover:border-blue-400',
+  food:     'shadow-[0_0_30px_rgba(245,158,11,0.3)] border-amber-500/40 hover:border-amber-400',
 };
 
 const containerVariants = {
@@ -23,65 +23,70 @@ const containerVariants = {
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 28, scale: 0.92 },
-  show:   { opacity: 1, y: 0,  scale: 1, transition: { type: 'spring', stiffness: 260, damping: 24 } },
-  exit:   { opacity: 0, y: -12, scale: 0.94, transition: { duration: 0.18 } },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  show:   { opacity: 1, y: 0,  scale: 1, transition: { type: 'spring', stiffness: 240, damping: 22 } },
+  exit:   { opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.2 } },
 };
 
 export const CategorySelection: React.FC<Props> = ({ onSelect, onBack }) => {
   return (
     <motion.div
-      className="flex-1 flex flex-col p-6 max-w-5xl mx-auto w-full relative z-10"
-      initial={{ opacity: 0, x: 30 }}
+      className="flex-1 flex flex-col p-4 max-w-5xl mx-auto w-full relative z-10"
+      initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -30 }}
-      transition={{ duration: 0.28 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
     >
-      <header className="flex items-center mb-8 mt-4">
+      <header className="flex items-center mb-6 mt-2">
         <motion.button
           onClick={onBack}
-          whileHover={{ scale: 1.12, x: -3 }}
+          whileHover={{ scale: 1.15, x: -4 }}
           whileTap={{ scale: 0.9 }}
-          className="p-2 rounded-full hover:bg-white/10 transition-colors mr-4 text-purple-200"
+          className="p-2 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 transition-colors mr-4 text-white shadow-lg backdrop-blur-sm"
         >
-          <ChevronLeft size={28} />
+          <ChevronLeft size={24} />
         </motion.button>
         <div>
-          <h2 className="text-3xl font-bold text-white">Select Category</h2>
-          <p className="text-purple-300/70">Choose a theme for your game</p>
+          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-tight">Select Theme</h2>
+          <p className="text-slate-400 font-medium tracking-wide mt-0.5 text-sm">What would you like to match today?</p>
         </div>
       </header>
 
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         variants={containerVariants}
         initial="hidden"
         animate="show"
         exit="exit"
       >
         {categories.map(cat => {
-          const grad = categoryGradients[cat.id] || cat.color;
+          const glowClass = categoryGlows[cat.id] || 'border-white/20 hover:border-white/40';
           return (
             <motion.button
               key={cat.id}
               variants={cardVariants}
-              whileHover={{ scale: 1.05, y: -6, boxShadow: '0 16px 40px rgba(0,0,0,0.4)' }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04, y: -4 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => onSelect(cat)}
-              className={`group relative flex flex-col items-center text-center p-8 bg-gradient-to-br ${grad} rounded-3xl shadow-lg border border-white/20 overflow-hidden transition-shadow duration-300`}
+              className={`group relative flex flex-col items-center text-center p-5 bg-slate-900/60 backdrop-blur-md rounded-[1.5rem] border-2 ${glowClass} overflow-hidden transition-all duration-300`}
             >
-              {/* Hover sheen */}
-              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300 rounded-3xl" />
-              {/* Icon */}
-              <motion.div
-                className="text-6xl mb-4 drop-shadow-lg z-10"
-                whileHover={{ rotate: [0, -8, 8, -4, 0], scale: 1.15 }}
-                transition={{ duration: 0.4 }}
-              >
-                {cat.icon}
-              </motion.div>
-              <h3 className="text-2xl font-bold mb-1 text-white z-10">{cat.name}</h3>
-              <p className="text-sm text-white/70 z-10">{cat.description}</p>
+              {/* Inner ambient glow on hover */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Icon Container */}
+              <div className="relative mb-3">
+                <div className="absolute inset-0 bg-white/10 blur-xl rounded-full scale-150 group-hover:bg-white/20 transition-colors duration-300" />
+                <motion.div
+                  className="relative text-5xl drop-shadow-xl z-10"
+                  whileHover={{ rotate: [0, -10, 10, -5, 5, 0], scale: 1.1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {cat.icon}
+                </motion.div>
+              </div>
+              
+              <h3 className="text-xl font-black mb-1 text-white z-10 tracking-wide">{cat.name}</h3>
+              <p className="text-xs font-medium text-slate-400 z-10">{cat.description}</p>
             </motion.button>
           );
         })}

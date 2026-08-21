@@ -7,99 +7,63 @@
 /* ── CSS custom properties ─────────────────────────────────────────────── */
 @layer base {
   :root {
-    --background: #1a0a2e;
-    --foreground: #f0e6ff;
-    --primary: #a855f7;
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --primary: #8b5cf6;
     --primary-foreground: #ffffff;
   }
 
   .dark {
-    --background: #0d0521;
-    --foreground: #e8d5ff;
-    --primary: #c084fc;
+    --background: #020617;
+    --foreground: #f1f5f9;
+    --primary: #a855f7;
     --primary-foreground: #ffffff;
   }
 }
 
-/* ── Body / global ─────────────────────────────────────────────────────── */
+/* ── Body / Symmetric Flowing Wave Theme ──────────────────────────────── */
 body {
-  background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 25%, #1e3a5f 50%, #0d2137 75%, #1a0a2e 100%);
+  background-color: var(--background);
+  /* 3 to 4 colors: Dark Slate, Deep Violet, Rich Magenta, Deep Cyan */
+  background: linear-gradient(-45deg, #0f172a, #4c1d95, #be185d, #0e7490, #312e81);
+  background-size: 400% 400%;
+  animation: waveFlow 18s ease-in-out infinite;
   color: var(--foreground);
   font-family: 'Fredoka', system-ui, sans-serif;
   margin: 0;
   min-height: 100vh;
-  transition: background-color 0.3s, color 0.3s;
   position: relative;
   overflow-x: hidden;
 }
 
-/* ── Twinkling star layer ──────────────────────────────────────────────── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.85) 0%, transparent 100%),
-    radial-gradient(2px 2px at 30% 50%, rgba(200,180,255,0.65) 0%, transparent 100%),
-    radial-gradient(3px 3px at 50% 10%, rgba(255,200,255,0.75) 0%, transparent 100%),
-    radial-gradient(2px 2px at 70% 80%, rgba(180,220,255,0.80) 0%, transparent 100%),
-    radial-gradient(2px 2px at 90% 30%, rgba(255,255,200,0.65) 0%, transparent 100%),
-    radial-gradient(3px 3px at 15% 70%, rgba(200,255,220,0.55) 0%, transparent 100%),
-    radial-gradient(2px 2px at 45% 90%, rgba(255,200,200,0.75) 0%, transparent 100%),
-    radial-gradient(2px 2px at 80% 15%, rgba(200,200,255,0.85) 0%, transparent 100%),
-    radial-gradient(3px 3px at 60% 40%, rgba(255,220,255,0.55) 0%, transparent 100%),
-    radial-gradient(2px 2px at 25% 35%, rgba(220,255,255,0.65) 0%, transparent 100%),
-    radial-gradient(2px 2px at 55% 60%, rgba(255,240,200,0.50) 0%, transparent 100%),
-    radial-gradient(2px 2px at 38% 72%, rgba(200,240,255,0.60) 0%, transparent 100%);
-  pointer-events: none;
-  z-index: 0;
-  animation: twinkle 4s ease-in-out infinite alternate;
-}
-
-/* ── Floating glow orbs ────────────────────────────────────────────────── */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    radial-gradient(140px 140px at 15% 80%, rgba(168,85,247,0.18) 0%, transparent 70%),
-    radial-gradient(200px 200px at 85% 20%, rgba(59,130,246,0.14) 0%, transparent 70%),
-    radial-gradient(110px 110px at 50% 60%, rgba(236,72,153,0.12) 0%, transparent 70%),
-    radial-gradient(160px 160px at 70% 90%, rgba(45,212,191,0.12) 0%, transparent 70%),
-    radial-gradient(120px 120px at 30% 10%, rgba(250,204,21,0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  animation: float-orbs 9s ease-in-out infinite alternate;
+/* Symmetric oscillation animation */
+@keyframes waveFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ── Keyframes ─────────────────────────────────────────────────────────── */
-@keyframes twinkle {
-  0%   { opacity: 0.55; }
-  100% { opacity: 1; }
-}
-
-@keyframes float-orbs {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(-22px); }
-}
-
-/* Card matched glow pulse */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 12px 3px rgba(250, 204, 21, 0.55); }
-  50%       { box-shadow: 0 0 26px 8px rgba(250, 204, 21, 0.85); }
+  0%, 100% { box-shadow: 0 0 15px 4px rgba(250, 204, 21, 0.5); }
+  50%      { box-shadow: 0 0 30px 10px rgba(250, 204, 21, 0.8); }
 }
 
-/* Card mismatch shake */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  18%       { transform: translateX(-8px); }
-  36%       { transform: translateX(8px); }
-  54%       { transform: translateX(-5px); }
-  72%       { transform: translateX(5px); }
-  88%       { transform: translateX(-2px); }
+  18%      { transform: translateX(-8px); }
+  36%      { transform: translateX(8px); }
+  54%      { transform: translateX(-5px); }
+  72%      { transform: translateX(5px); }
+  88%      { transform: translateX(-2px); }
 }
 
-/* Shimmer sweep */
 @keyframes shimmer {
   0%   { background-position: 200% center; }
   100% { background-position: -200% center; }
@@ -114,15 +78,6 @@ body::after {
   transform-style: preserve-3d;
 }
 
-.backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.rotate-y-180 {
-  transform: rotateY(180deg);
-}
-
 /* ── Utility classes ───────────────────────────────────────────────────── */
 .card-glow-matched {
   animation: glow-pulse 1.2s ease-in-out infinite;
@@ -132,8 +87,8 @@ body::after {
   animation: shake 0.42s ease-in-out;
 }
 
-/* Smooth scrollbar for settings page */
+/* Smooth scrollbar */
 ::-webkit-scrollbar          { width: 6px; }
-::-webkit-scrollbar-track    { background: rgba(88, 28, 135, 0.2); border-radius: 4px; }
-::-webkit-scrollbar-thumb    { background: rgba(168, 85, 247, 0.5); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(216, 180, 254, 0.7); }
+::-webkit-scrollbar-track    { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
+::-webkit-scrollbar-thumb    { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }

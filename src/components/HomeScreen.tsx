@@ -62,51 +62,53 @@ export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings }) => {
           transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.05 }}
         >
           {/* Glow blob behind title */}
-          <div className="absolute inset-0 blur-3xl bg-fuchsia-500/25 rounded-full scale-[1.6] pointer-events-none" />
+          <div className="absolute inset-0 blur-[60px] bg-white/10 rounded-full scale-[2] pointer-events-none" />
 
-          <h1 className="relative text-6xl md:text-8xl font-extrabold tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-br from-fuchsia-300 via-pink-300 to-cyan-300 drop-shadow-sm mb-3">
-            MEMORY<br />FLIP
+          <h1 className="relative text-7xl md:text-9xl font-black tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-br from-white via-indigo-200 to-pink-200 drop-shadow-lg mb-4">
+            MEMORY
+            <br />
+            FLIP
           </h1>
           <motion.p
-            className="relative text-lg md:text-xl font-semibold text-purple-200/80 tracking-widest"
+            className="relative text-xl md:text-2xl font-bold text-white/80 tracking-widest uppercase"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
           >
-            ✨ Flip. Match. Remember. ✨
+            Match &bull; Remember &bull; Win
           </motion.p>
         </motion.div>
 
         {/* Demo card row */}
-        <div className="flex gap-3 justify-center">
+        <div className="flex gap-4 justify-center my-4">
           {DEMO_CARDS.map((icon, i) => (
             <motion.div
               key={i}
-              className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br ${DEMO_COLORS[i]} border-2 border-white/20 flex items-center justify-center shadow-xl`}
+              className={`w-16 h-20 md:w-20 md:h-24 rounded-2xl bg-gradient-to-br ${DEMO_COLORS[i]} border-2 border-white/40 flex items-center justify-center shadow-2xl`}
               initial={{ opacity: 0, y: 20, rotateY: 180 }}
               animate={{ opacity: 1, y: 0, rotateY: 0 }}
               transition={{ delay: 0.3 + i * 0.1, type: 'spring', stiffness: 220, damping: 22 }}
               whileHover={{ scale: 1.15, rotateZ: 6, y: -6 }}
-              style={{ perspective: '600px' }}
+              style={{ perspective: '600px', backfaceVisibility: 'hidden' }}
             >
-              <span style={{ fontSize: '1.8rem' }}>{icon}</span>
+              <span style={{ fontSize: '2.5rem' }}>{icon}</span>
             </motion.div>
           ))}
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-col gap-4 w-full sm:w-72">
+        <div className="flex flex-col gap-4 w-full sm:w-64">
           <motion.button
             onClick={onPlay}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(236,72,153,0.55)' }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(255,255,255,0.4)' }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-500 text-white text-xl md:text-2xl font-black py-5 px-10 rounded-full shadow-[0_0_28px_rgba(236,72,153,0.4)] transition-shadow"
+            className="flex items-center justify-center gap-2 bg-white text-slate-900 text-lg md:text-xl font-black py-3 px-8 rounded-full shadow-[0_0_28px_rgba(255,255,255,0.2)] transition-all"
           >
-            <Play fill="currentColor" size={26} />
-            START GAME
+            <Play fill="currentColor" size={22} />
+            PLAY NOW
           </motion.button>
 
           <motion.button
@@ -114,11 +116,11 @@ export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            whileHover={{ scale: 1.05, boxShadow: '0 0 32px rgba(139,92,246,0.5)' }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 32px rgba(255,255,255,0.2)' }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-violet-600 to-indigo-700 text-white text-base md:text-lg font-bold py-4 px-8 rounded-full shadow-[0_0_18px_rgba(139,92,246,0.3)] transition-shadow"
+            className="flex items-center justify-center gap-2 bg-slate-800/50 backdrop-blur-md border border-white/20 text-white text-sm md:text-base font-bold py-3 px-6 rounded-full shadow-lg transition-all hover:bg-slate-700/50"
           >
-            <Settings size={20} />
+            <Settings size={18} />
             SETTINGS & STATS
           </motion.button>
         </div>

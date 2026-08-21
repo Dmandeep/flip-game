@@ -5,6 +5,7 @@ import { DifficultySelection } from './components/DifficultySelection';
 import { GameScreen } from './components/GameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { SettingsScreen } from './components/SettingsScreen';
+import { BackgroundAnimation } from './components/BackgroundAnimation';
 import type { Category } from './data/categories';
 import type { DifficultyLevel } from './data/difficulties';
 import { StorageUtils } from './utils/storage';
@@ -44,6 +45,7 @@ function App() {
 
   return (
     <div className="w-full min-h-screen overflow-hidden flex flex-col relative transition-colors duration-300">
+      <BackgroundAnimation />
       <AnimatePresence mode="wait">
         {currentScreen === 'home' && (
           <HomeScreen

@@ -213,23 +213,23 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
     <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
 
       {/* ── Header ────────────────────────────────────────────────────── */}
-      <header className="px-4 py-3 flex items-center justify-between bg-purple-950/70 backdrop-blur-md shadow-lg z-10 border-b border-purple-500/20">
-        <div className="flex items-center gap-3 md:gap-5 text-purple-100">
+      <header className="px-4 py-3 flex items-center justify-between bg-slate-900/50 backdrop-blur-md shadow-lg z-10 border-b border-white/10">
+        <div className="flex items-center gap-3 md:gap-5 text-white">
           {/* Timer */}
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">{category.name}</span>
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">{category.name}</span>
             <div className="text-lg font-bold tabular-nums">⏱ {formatTime(time)}</div>
           </div>
-          <div className="hidden sm:block w-px h-7 bg-purple-500/30" />
+          <div className="hidden sm:block w-px h-7 bg-white/20" />
           {/* Moves */}
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Moves</span>
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Moves</span>
             <div className="text-lg font-bold">🎯 {moves}</div>
           </div>
-          <div className="hidden sm:block w-px h-7 bg-purple-500/30" />
+          <div className="hidden sm:block w-px h-7 bg-white/20" />
           {/* Score */}
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Score</span>
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Score</span>
             <motion.div
               key={score}
               className="text-lg font-bold text-yellow-300"
@@ -240,10 +240,10 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
               ⭐ {score}
             </motion.div>
           </div>
-          <div className="hidden sm:block w-px h-7 bg-purple-500/30" />
+          <div className="hidden sm:block w-px h-7 bg-white/20" />
           {/* Combo */}
           <div className="flex flex-col min-w-[72px]">
-            <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Combo</span>
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Combo</span>
             <AnimatePresence mode="wait">
               <motion.div
                 key={combo}
@@ -252,7 +252,7 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 20 }}
                 className="text-lg font-bold"
-                style={{ color: combo > 1 ? '#f97316' : '#c4b5fd' }}
+                style={{ color: combo > 1 ? '#f97316' : '#94a3b8' }}
               >
                 {combo > 1 ? `🔥 ×${combo}` : '—'}
               </motion.div>
@@ -265,7 +265,7 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
           onClick={() => setIsPaused(true)}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="p-2.5 bg-purple-700/50 hover:bg-purple-600/60 text-purple-200 rounded-xl transition-colors border border-purple-500/30"
+          className="p-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-white rounded-xl transition-colors border border-white/20"
         >
           <Pause size={18} />
         </motion.button>
@@ -273,19 +273,19 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
 
       {/* ── Progress bar ──────────────────────────────────────────────── */}
       {totalPairs > 0 && (
-        <div className="px-4 py-1.5 bg-purple-950/50">
-          <div className="flex items-center gap-2 max-w-4xl mx-auto">
-            <span className="text-[11px] text-purple-400 font-bold whitespace-nowrap tabular-nums">
+        <div className="px-4 py-1.5 bg-slate-950/40 border-b border-white/5">
+          <div className="flex items-center gap-3 max-w-4xl mx-auto">
+            <span className="text-[11px] text-slate-300 font-bold whitespace-nowrap tabular-nums">
               {matchedIds.length / 2} / {totalPairs}
             </span>
-            <div className="flex-1 h-2 bg-purple-900/60 rounded-full overflow-hidden">
+            <div className="flex-1 h-2.5 bg-slate-800/60 rounded-full overflow-hidden shadow-inner">
               <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-400 to-rose-400"
+                className="h-full rounded-full bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400"
                 animate={{ width: `${pairsFraction * 100}%` }}
                 transition={{ type: 'spring', stiffness: 100, damping: 22 }}
               />
             </div>
-            <span className="text-[11px] text-purple-400 font-bold">{Math.round(pairsFraction * 100)}%</span>
+            <span className="text-[11px] text-slate-300 font-bold">{Math.round(pairsFraction * 100)}%</span>
           </div>
         </div>
       )}

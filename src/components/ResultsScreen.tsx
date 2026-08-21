@@ -107,58 +107,59 @@ export const ResultsScreen: React.FC<Props> = ({
 
       {/* ── Result card ─────────────────────────────────────────────── */}
       <motion.div
-        className="z-10 bg-gradient-to-br from-purple-900/85 to-indigo-900/85 backdrop-blur-md rounded-3xl p-8 md:p-10 shadow-2xl max-w-md w-full text-center border border-purple-500/30"
+        className="z-10 bg-slate-900/70 backdrop-blur-md rounded-[2rem] p-8 md:p-10 shadow-2xl max-w-md w-full text-center border border-white/20"
         initial={{ scale: 0.75, y: 60, opacity: 0 }}
         animate={{ scale: 1,    y: 0,  opacity: 1 }}
         transition={{ type: 'spring', stiffness: 220, damping: 24, delay: 0.05 }}
       >
         {/* Trophy + heading */}
         <motion.div
-          className="text-7xl mb-2"
+          className="text-7xl mb-2 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]"
           initial={{ scale: 0, rotate: -15 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 18, delay: 0.2 }}
         >
           🏆
         </motion.div>
-        <h1 className="text-4xl md:text-5xl font-black mb-1 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-fuchsia-400">
+        <h1 className="text-4xl md:text-5xl font-black mb-1 text-white tracking-wide">
           YOU WON!
         </h1>
-        <p className="text-purple-300 mb-7 font-semibold tracking-widest text-xs">
+        <p className="text-slate-400 mb-7 font-bold tracking-[0.2em] text-xs">
           ALL PAIRS FOUND ✨
         </p>
 
         {/* Stat grid */}
-        <div className="grid grid-cols-2 gap-3 mb-7">
+        <div className="grid grid-cols-2 gap-3 mb-8">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
-              className={`bg-gradient-to-br ${s.color} p-4 rounded-2xl border ${s.border}`}
+              className={`bg-slate-800/50 backdrop-blur-sm p-4 rounded-2xl border ${s.border}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 + i * 0.08, type: 'spring', stiffness: 260, damping: 22 }}
             >
-              <p className="text-purple-300 text-[10px] font-black mb-1 uppercase tracking-widest">{s.label}</p>
+              <p className="text-slate-400 text-[10px] font-black mb-1 uppercase tracking-widest">{s.label}</p>
               <p className={`text-2xl font-black ${s.textCls}`}>{s.value}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Action buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           <motion.button
             onClick={onPlayAgain}
-            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-black py-4 px-6 rounded-xl shadow-lg text-lg"
+            whileHover={{ scale: 1.04, boxShadow: '0 0 20px rgba(255,255,255,0.2)' }} 
+            whileTap={{ scale: 0.96 }}
+            className="flex items-center justify-center gap-2 bg-white text-slate-900 font-black py-3 px-5 rounded-xl shadow-lg text-base transition-all"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55 }}
           >
-            <RotateCcw size={20} /> Play Again
+            <RotateCcw size={18} /> PLAY AGAIN
           </motion.button>
 
           <motion.div
-            className="grid grid-cols-2 gap-3"
+            className="grid grid-cols-2 gap-2.5"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.65 }}
@@ -166,28 +167,28 @@ export const ResultsScreen: React.FC<Props> = ({
             <motion.button
               onClick={onChangeDifficulty}
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-              className="flex items-center justify-center gap-2 bg-violet-600/50 hover:bg-violet-500/60 text-white font-semibold py-3 px-4 rounded-xl transition-colors border border-violet-500/30 text-sm"
+              className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 text-white font-semibold py-2.5 px-3 rounded-lg transition-colors border border-white/10 text-xs"
             >
-              <Grid size={16} /> Difficulty
+              <Grid size={14} /> Difficulty
             </motion.button>
             <motion.button
               onClick={onChangeCategory}
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-              className="flex items-center justify-center gap-2 bg-indigo-600/50 hover:bg-indigo-500/60 text-white font-semibold py-3 px-4 rounded-xl transition-colors border border-indigo-500/30 text-sm"
+              className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 text-white font-semibold py-2.5 px-3 rounded-lg transition-colors border border-white/10 text-xs"
             >
-              <LayoutDashboard size={16} /> Category
+              <LayoutDashboard size={14} /> Category
             </motion.button>
           </motion.div>
 
           <motion.button
             onClick={onHome}
-            className="flex items-center justify-center gap-2 mt-1 text-purple-300 hover:text-white transition-colors py-2 text-sm font-semibold"
+            className="flex items-center justify-center gap-2 mt-1 text-slate-400 hover:text-white transition-colors py-1.5 text-xs font-semibold"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.75 }}
             whileHover={{ scale: 1.03 }}
           >
-            <Home size={16} /> Back to Home
+            <Home size={14} /> Back to Home
           </motion.button>
         </div>
       </motion.div>
