@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { SoundFX } from '../utils/sound';
 
 export type CardData = {
   id: string;
   itemId: string;
   name: string;
   icon: string;
-  color?: string;
+  image?: string;
   isFlipped: boolean;
   isMatched: boolean;
 };
@@ -16,199 +18,227 @@ type CardProps = {
   disabled: boolean;
   reducedMotion: boolean;
   isMismatched?: boolean;
+  soundOn: boolean;
 };
 
-/* ─── Colour palette for cards ────────────────────────────────────────────── */
-const CARD_COLORS = [
-  { back: 'from-blue-500 to-cyan-400',       front: 'from-blue-100 to-blue-300',     border: 'border-blue-300/40',  text: 'text-blue-900'  },
-  { back: 'from-violet-500 to-fuchsia-400',  front: 'from-violet-100 to-fuchsia-300', border: 'border-fuchsia-300/40', text: 'text-violet-900'},
-  { back: 'from-emerald-500 to-teal-400',    front: 'from-emerald-100 to-teal-300',   border: 'border-teal-300/40',  text: 'text-teal-900'  },
-  { back: 'from-rose-500 to-pink-400',       front: 'from-rose-100 to-pink-300',      border: 'border-pink-300/40',  text: 'text-rose-900'  },
-  { back: 'from-amber-500 to-orange-400',    front: 'from-amber-100 to-orange-300',   border: 'border-orange-300/40', text: 'text-orange-900' },
-  { back: 'from-indigo-500 to-purple-400',   front: 'from-indigo-100 to-purple-300',  border: 'border-purple-300/40', text: 'text-indigo-900' },
-  { back: 'from-teal-500 to-cyan-400',       front: 'from-teal-100 to-cyan-300',      border: 'border-cyan-300/40',  text: 'text-teal-900'  },
-  { back: 'from-red-500 to-rose-400',        front: 'from-red-100 to-rose-300',       border: 'border-rose-300/40',  text: 'text-red-900'   },
-];
-
-function getColor(itemId: string) {
-  const idx = itemId.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  return CARD_COLORS[idx % CARD_COLORS.length];
-}
-
-/* ─── Sparkle burst rendered after a successful match ─────────────────────── */
-const SPARKLE_COUNT = 8;
-function SparkleRing() {
-  return (
-    <div className="absolute inset-0 pointer-events-none">
-      {Array.from({ length: SPARKLE_COUNT }).map((_, i) => {
-        const angle = (360 / SPARKLE_COUNT) * i;
-        return (
-          <motion.div
-            key={i}
-            className="absolute left-1/2 top-1/2 w-2 h-2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-            initial={{ x: '-50%', y: '-50%', scale: 0, opacity: 1 }}
-            animate={{
-              x: `calc(-50% + ${Math.cos((angle * Math.PI) / 180) * 45}px)`,
-              y: `calc(-50% + ${Math.sin((angle * Math.PI) / 180) * 45}px)`,
-              scale: [0, 1.6, 0],
-              opacity: [1, 1, 0],
-            }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-/* ─── Main card ────────────────────────────────────────────────────────────── */
 export const Card: React.FC<CardProps> = ({
   card,
   onClick,
   disabled,
   reducedMotion,
   isMismatched = false,
+  soundOn,
 }) => {
-  const color = getColor(card.itemId);
   const revealed = card.isFlipped || card.isMatched;
+  
+  const hasPlayedFlipSound = useRef(false);
+
+  useEffect(() => {
+    if (revealed && !hasPlayedFlipSound.current) {
+      if (soundOn) SoundFX.flip();
+      hasPlayedFlipSound.current = true;
+    } else if (!revealed) {
+      hasPlayedFlipSound.current = false;
+    }
+  }, [revealed, soundOn]);
 
   const handleClick = () => {
     if (!disabled && !card.isFlipped && !card.isMatched) onClick(card);
   };
 
-  /* spring used for the Y-axis flip */
   const flipTransition = reducedMotion
     ? { duration: 0 }
-    : { type: 'spring' as const, stiffness: 260, damping: 25 };
+    : { type: 'spring' as const, stiffness: 500, damping: 25, mass: 1.5 };
 
   return (
-    <motion.div
-      /* container — holds perspective + hover lift */
-      className={`relative w-full h-full max-w-full max-h-full aspect-[4/5] perspective-1000 select-none mx-auto ${
-        disabled || revealed ? 'cursor-default' : 'cursor-pointer'
-      }`}
-      style={{ maxHeight: '100%', maxWidth: '100%' }}
-      onClick={handleClick}
-      /* entry pop */
-      initial={reducedMotion ? {} : { scale: 0.6, opacity: 0 }}
-      animate={
-        reducedMotion
-          ? {}
-          : isMismatched
-          ? { x: [0, -8, 8, -6, 6, -3, 3, 0] }   // shake
-          : card.isMatched
-          ? { scale: [1, 1.12, 0.95, 1.06, 1] }   // bounce-pop
-          : { scale: 1, opacity: 1 }
-      }
-      transition={
-        isMismatched
-          ? { duration: 0.45, ease: 'easeInOut' }
-          : card.isMatched
-          ? { duration: 0.45, ease: 'easeOut' }
-          : { type: 'spring', stiffness: 260, damping: 22 }
-      }
-      whileHover={
-        !disabled && !revealed && !reducedMotion ? { scale: 1.05, y: -4 } : {}
-      }
-      whileTap={
-        !disabled && !revealed && !reducedMotion ? { scale: 0.96 } : {}
-      }
-    >
-      {/* 3-D flip inner wrapper */}
-      <motion.div
-        className="relative w-full h-full transform-style-3d shadow-xl rounded-2xl"
-        animate={{ rotateY: revealed ? 180 : 0 }}
-        transition={flipTransition}
-        style={{
-          boxShadow: card.isMatched
-            ? '0 0 20px rgba(255,255,255,0.7)'
-            : isMismatched
-            ? '0 0 15px rgba(239,68,68,0.6)'
-            : '0 8px 24px rgba(0,0,0,0.15)',
-        }}
-      >
-        {/* ── BACK face (face-down) ─────────────────────────────────────── */}
-        <div
-          className={`absolute inset-0 rounded-2xl border-2 ${color.border} bg-gradient-to-br ${color.back} flex flex-col items-center justify-center overflow-hidden shadow-inner`}
-          style={{ 
-            backfaceVisibility: 'hidden', 
-            WebkitBackfaceVisibility: 'hidden',
-          }}
-        >
-          {/* Detailed subtle repeating texture */}
-          <div 
-            className="absolute inset-0 opacity-[0.15]" 
-            style={{
-              backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.5) 10px, rgba(255,255,255,0.5) 11px)'
-            }}
+    <div className="relative w-full h-full aspect-[3/4] perspective-1000 select-none mx-auto group">
+      {/* ── TITAN LIGHTNING FLASH ───────────────────────────────────── */}
+      <AnimatePresence>
+        {card.isMatched && !reducedMotion && (
+          <motion.div
+            className="absolute inset-[-50%] bg-[#fde047] rounded-full mix-blend-overlay z-50 pointer-events-none blur-2xl"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: [1, 0.8, 0], scale: [1, 1.5, 2] }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           />
-          
-          {/* Glassy overlay */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent backdrop-blur-[1px]" />
-          
-          {/* Central Crest / Logo */}
-          <div className="relative z-10 flex flex-col items-center justify-center">
-            {/* Outer ring */}
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-white/40 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.2)] bg-white/10 backdrop-blur-sm">
-              {/* Inner glowing element */}
-              <div className="text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
-                ❖
-              </div>
-            </div>
-            {/* Small subtle text */}
-            <span className="mt-3 text-[9px] md:text-[11px] font-black tracking-[0.3em] text-white/70 uppercase">
-              Memory
-            </span>
-          </div>
-        </div>
+        )}
+      </AnimatePresence>
 
-        {/* ── FRONT face (revealed) ─────────────────────────────────────── */}
-        <div
-          className={`absolute inset-0 rounded-2xl border-2 ${color.border} bg-gradient-to-br ${color.front} flex flex-col items-center justify-center overflow-hidden ${card.isMatched ? 'ring-4 ring-white/60 ring-offset-2 ring-offset-transparent' : ''}`}
-          style={{ 
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)' // Fixed the invisible front face issue
+      <motion.div
+        className={`relative w-full h-full ${disabled || revealed ? 'cursor-default' : 'cursor-pointer'}`}
+        onClick={handleClick}
+        initial={{ opacity: 1, scale: 1, y: 0, rotateZ: 0, filter: "blur(0px)" }}
+        whileHover={(!disabled && !revealed && !reducedMotion) ? { scale: 1.05 } : {}}
+        whileTap={(!disabled && !revealed && !reducedMotion) ? { scale: 0.95 } : {}}
+        animate={
+          reducedMotion
+            ? {}
+            : isMismatched
+            ? { x: [0, -10, 10, -5, 5, 0] }
+            : card.isMatched
+            ? { 
+                filter: "drop-shadow(0 0 10px rgba(255,0,0,0.8))"
+              }
+            : { scale: 1, y: 0, rotateZ: 0, filter: "blur(0px)" }
+        }
+        transition={
+          isMismatched
+            ? { duration: 0.3, ease: 'linear' }
+            : { type: 'spring', stiffness: 400, damping: 30 }
+        }
+      >
+        <motion.div
+          className="relative w-full h-full transform-style-3d shadow-2xl"
+          animate={{ rotateY: revealed ? 180 : 0 }}
+          transition={flipTransition}
+          style={{
+            boxShadow: card.isMatched
+              ? '0 0 50px rgba(253, 224, 71, 0.8)'
+              : '0 10px 20px rgba(0,0,0,0.5)',
           }}
         >
-          {/* Inner shine */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/10 to-transparent pointer-events-none" />
-          
-          {/* Shimmer sweep on match */}
-          {card.isMatched && !reducedMotion && (
-            <motion.div
-              className="absolute inset-0"
-              style={{
-                background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%)',
-                backgroundSize: '200% 100%',
-              }}
-              animate={{ backgroundPositionX: ['200%', '-200%'] }}
-              transition={{ duration: 0.6, ease: 'easeInOut' }}
+          {/* Hover Titan Sparks */}
+          {!revealed && !reducedMotion && (
+            <div className="titan-sparks" />
+          )}
+
+          {/* Blood Slash on Mismatch */}
+          {!reducedMotion && (
+            <motion.div 
+              className="blood-slash rounded-lg"
+              animate={{ opacity: isMismatched ? [0, 1, 0] : 0 }}
+              transition={{ duration: 0.4 }}
             />
           )}
-          
-          {/* Emoji - MADE MUCH LARGER */}
-          <span
-            className="relative z-10 drop-shadow-md leading-none select-none"
-            style={{ fontSize: 'clamp(3rem, 10vw, 6.5rem)' }} // Drastically increased size
-          >
-            {card.icon}
-          </span>
-          
-          {/* Name - Styled to match the new bright theme */}
-          <p
-            className={`relative z-10 font-extrabold text-center px-2 mt-2 leading-tight ${color.text} tracking-wide uppercase`}
-            style={{ fontSize: 'clamp(0.6rem, 2vw, 1rem)' }}
-          >
-            {card.name}
-          </p>
-        </div>
-      </motion.div>
 
-      {/* Sparkle burst overlay (only on match, non-reduced) */}
-      <AnimatePresence>
-        {card.isMatched && !reducedMotion && <SparkleRing key="sparkle" />}
-      </AnimatePresence>
-    </motion.div>
+          {/* ── BACK FACE (Survey Corps Leather & Logo) ─────────────────────────────────────── */}
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden texture-leather bg-[#3e2723]"
+            style={{ 
+              backfaceVisibility: 'hidden', 
+            }}
+          >
+            {/* The user's downloaded original logo */}
+            <img 
+              src="/logo.jpg" 
+              alt="Survey Corps Logo" 
+              className="w-full h-full object-cover opacity-90 mix-blend-multiply"
+              onError={(e) => {
+                // Fallback to SVG if logo.jpg is missing
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).nextElementSibling!.classList.remove('hidden');
+              }}
+            />
+            
+            {/* Fallback SVG just in case */}
+            <div className="hidden w-3/4 h-3/4 opacity-80 flex items-center justify-center drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] filter grayscale contrast-125 brightness-110 sepia-[0.3]">
+              <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" stroke="currentColor">
+                {/* Shield */}
+                <path d="M10,20 L50,5 L90,20 L90,60 C90,80 50,95 50,95 C50,95 10,80 10,60 Z" stroke="#333" strokeWidth="4" fill="#222" />
+                {/* Cross Wings */}
+                <path d="M20,40 L45,60 L50,80 L35,50 Z" fill="#fff" />
+                <path d="M80,30 L55,50 L50,70 L65,40 Z" fill="#3b82f6" />
+                <path d="M15,50 L40,70 L50,90 L30,60 Z" fill="#fff" />
+                <path d="M85,40 L60,60 L50,80 L70,50 Z" fill="#3b82f6" />
+                <path d="M25,30 L45,50 L50,70 L40,40 Z" fill="#fff" />
+                <path d="M75,20 L55,40 L50,60 L60,30 Z" fill="#3b82f6" />
+              </svg>
+            </div>
+          </div>
+
+          {/* ── FRONT FACE (Revealed Target) ─────────────────────────────────────── */}
+          {/* ── FRONT FACE (Revealed Target) ─────────────────────────────────────── */}
+          <div
+            className={`absolute inset-0 ${!card.isMatched || reducedMotion ? 'texture-parchment' : ''}`}
+            style={{ 
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              borderRadius: '6px'
+            }}
+          >
+            {/* Main Un-sliced Image (Always rendered, but fades out instantly on match) */}
+            <motion.div 
+              className="absolute inset-0 flex flex-col items-center justify-center p-1"
+              animate={{ opacity: card.isMatched && !reducedMotion ? 0 : 1 }}
+              transition={{ duration: 0 }}
+            >
+              {card.image ? (
+                <img src={card.image} alt={card.name} className="w-full h-full object-cover rounded shadow-inner" referrerPolicy="no-referrer" />
+              ) : (
+                <span className="relative z-10 select-none drop-shadow-md" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>
+                  {card.icon}
+                </span>
+              )}
+              <div className="absolute bottom-0 w-full bg-black/70 p-1 backdrop-blur-sm rounded-b">
+                <p className="font-sans font-bold text-white text-[10px] uppercase tracking-widest text-center truncate">
+                  {card.name}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Sword Slash Line */}
+            {!reducedMotion && (
+              <motion.div
+                className="absolute top-1/2 left-[-25%] w-[150%] h-[6px] bg-white z-50 origin-left pointer-events-none"
+                initial={{ scaleX: 0, rotate: 45, opacity: 0 }}
+                animate={card.isMatched ? { scaleX: [0, 1, 1], opacity: [1, 1, 0] } : { opacity: 0 }}
+                transition={card.isMatched ? { duration: 0.5, ease: "easeOut" } : { duration: 0 }}
+                style={{ boxShadow: '0 0 20px #fff, 0 0 40px #f00' }}
+              />
+            )}
+
+            {/* Top-Left Half */}
+            {!reducedMotion && (
+              <motion.div
+                className="absolute inset-0 z-40 texture-parchment flex flex-col items-center justify-center p-1 pointer-events-none"
+                style={{ clipPath: 'polygon(0 0, 100% 0, 0 100%)', borderRadius: '6px' }}
+                initial={{ x: 0, y: 0, opacity: 0, rotate: 0 }}
+                animate={card.isMatched ? { x: -60, y: -60, opacity: [1, 1, 0], rotate: -25, filter: "blur(8px) sepia(100%) hue-rotate(-30deg)" } : { opacity: 0 }}
+                transition={card.isMatched ? { delay: 0.2, duration: 0.8, ease: "easeOut" } : { duration: 0 }}
+              >
+                {card.image ? (
+                  <img src={card.image} alt={card.name} className="w-full h-full object-cover rounded shadow-inner" referrerPolicy="no-referrer" />
+                ) : (
+                  <span className="relative z-10 select-none" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>{card.icon}</span>
+                )}
+                <div className="absolute bottom-0 w-full bg-black/70 p-1 backdrop-blur-sm rounded-b">
+                  <p className="font-sans font-bold text-white text-[10px] uppercase text-center">{card.name}</p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Bottom-Right Half */}
+            {!reducedMotion && (
+              <motion.div
+                className="absolute inset-0 z-40 texture-parchment flex flex-col items-center justify-center p-1 pointer-events-none"
+                style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 100%)', borderRadius: '6px' }}
+                initial={{ x: 0, y: 0, opacity: 0, rotate: 0 }}
+                animate={card.isMatched ? { x: 60, y: 60, opacity: [1, 1, 0], rotate: 25, filter: "blur(8px) sepia(100%) hue-rotate(-30deg)" } : { opacity: 0 }}
+                transition={card.isMatched ? { delay: 0.2, duration: 0.8, ease: "easeOut" } : { duration: 0 }}
+              >
+                {card.image ? (
+                  <img src={card.image} alt={card.name} className="w-full h-full object-cover rounded shadow-inner" referrerPolicy="no-referrer" />
+                ) : (
+                  <span className="relative z-10 select-none" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>{card.icon}</span>
+                )}
+                <div className="absolute bottom-0 w-full bg-black/70 p-1 backdrop-blur-sm rounded-b">
+                  <p className="font-sans font-bold text-white text-[10px] uppercase text-center">{card.name}</p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Impact Flash */}
+            {!reducedMotion && (
+              <motion.div
+                className="absolute inset-0 bg-red-500 z-50 mix-blend-overlay pointer-events-none rounded-lg"
+                initial={{ opacity: 0 }}
+                animate={card.isMatched ? { opacity: [0, 1, 0] } : { opacity: 0 }}
+                transition={card.isMatched ? { duration: 0.2 } : { duration: 0 }}
+              />
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };

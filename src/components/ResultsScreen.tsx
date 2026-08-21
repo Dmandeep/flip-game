@@ -1,195 +1,146 @@
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { RotateCcw, Home, Grid, LayoutDashboard } from 'lucide-react';
 import type { GameResult } from '../App';
+import type { DifficultyLevel } from '../data/difficulties';
 import { StorageUtils } from '../utils/storage';
+import { SoundFX } from '../utils/sound';
 
 type Props = {
   result: GameResult;
+  difficulty: DifficultyLevel;
   onPlayAgain: () => void;
-  onChangeCategory: () => void;
-  onChangeDifficulty: () => void;
   onHome: () => void;
 };
 
-/* ── Confetti particle config ─────────────────────────────────────────────── */
-const CONFETTI_COLORS = ['#facc15','#ef4444','#3b82f6','#10b981','#ec4899','#a855f7','#f97316','#06b6d4'];
-const CONFETTI_COUNT = 40;
+export const ResultsScreen: React.FC<Props> = ({ result, difficulty, onPlayAgain, onHome }) => {
+  const [isHighScore] = useState(() => {
+    const stats = StorageUtils.getStats();
+    return result.score > (stats.bestScore || 0);
+  });
 
-export const ResultsScreen: React.FC<Props> = ({
-  result,
-  onPlayAgain,
-  onChangeCategory,
-  onChangeDifficulty,
-  onHome,
-}) => {
-  const savedRef = React.useRef(false);
-
-  /* ── Save stats once ────────────────────────────────────────────────── */
   useEffect(() => {
-    if (savedRef.current) return;
-    savedRef.current = true;
+    // Play Erwin's victory speech!
+    SoundFX.stopBGM();
+    SoundFX.playErwin();
 
     const stats = StorageUtils.getStats();
-    StorageUtils.updateStats({
-      gamesPlayed: stats.gamesPlayed + 1,
-      gamesWon:    stats.gamesWon + 1,
-      bestScore:   Math.max(stats.bestScore, result.score),
-      bestTime:    Math.min(stats.bestTime,  result.time),
-      bestCombo:   Math.max(stats.bestCombo, result.combo),
-      totalMatches: stats.totalMatches + result.moves,
-      totalMoves:   stats.totalMoves   + result.moves,
-    });
-  }, [result]);
+    
+    const bestScore = stats.bestScore || 0;
+    if (result.score > bestScore) {
+      stats.bestScore = result.score;
+    }
+
+    stats.totalMatches += 1;
+    stats.totalMoves += result.moves;
+    
+    if (result.combo > stats.bestCombo) {
+      stats.bestCombo = result.combo;
+    }
+
+    if (stats.bestTime === 0 || result.time < stats.bestTime) {
+      stats.bestTime = result.time;
+    }
+    
+    StorageUtils.saveStats(stats);
+  }, [result, difficulty]);
 
   const formatTime = (s: number) =>
     `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
 
-  /* ── Stat cards config ──────────────────────────────────────────────── */
-  const stats = [
-    { label: 'TIME',       value: formatTime(result.time), color: 'from-sky-500/20 to-blue-600/20',     border: 'border-sky-500/30',     textCls: 'text-sky-200' },
-    { label: 'MOVES',      value: result.moves,            color: 'from-emerald-500/20 to-teal-600/20', border: 'border-emerald-500/30', textCls: 'text-emerald-200' },
-    { label: 'SCORE',      value: result.score,            color: 'from-amber-500/20 to-yellow-600/20', border: 'border-amber-500/30',   textCls: 'text-yellow-300' },
-    { label: 'BEST COMBO', value: `×${result.combo}`,      color: 'from-orange-500/20 to-red-600/20',   border: 'border-orange-500/30',  textCls: 'text-orange-300' },
-  ];
+  const accuracy = Math.round((((difficulty.cols * difficulty.rows) / 2) / result.moves) * 100);
 
-  /* ── Pre-calculate confetti props for React purity ─────────────────── */
-  const confettiParticles = useMemo(() => {
-    return Array.from({ length: CONFETTI_COUNT }).map(() => ({
-      left: `${Math.random() * 100}%`,
-      delay: Math.random() * 2.5,
-      duration: 2.8 + Math.random() * 2.2,
-      bgColor: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-      width: `${Math.random() * 7 + 4}px`,
-      height: `${Math.random() * 9 + 5}px`,
-      endRotate: Math.random() * 720 - 360,
-    }));
-  }, []);
+  // AOT Ranks
+  let rank = "TRAINEE";
+  let rankColor = "text-[#9ca3af]";
+  if (accuracy > 80) {
+    rank = "COMMANDER";
+    rankColor = "text-[#fde047]";
+  } else if (accuracy > 50) {
+    rank = "SCOUT";
+    rankColor = "text-[#4ade80]";
+  }
 
   return (
     <motion.div
-      className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden z-10"
+      className="flex-1 flex flex-col items-center justify-center p-6 relative z-10 min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, filter: 'blur(10px)' }}
+      transition={{ duration: 0.8 }}
     >
-      {/* ── Confetti ────────────────────────────────────────────────── */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {confettiParticles.map((p, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-sm"
-            initial={{
-              top: '-8%',
-              left: p.left,
-              opacity: 1,
-              rotate: 0,
-            }}
-            animate={{
-              top: '115%',
-              rotate: p.endRotate,
-              opacity: [1, 1, 0.6, 0],
-            }}
-            transition={{
-              duration: p.duration,
-              repeat: Infinity,
-              delay: p.delay,
-              ease: 'linear',
-            }}
-            style={{
-              backgroundColor: p.bgColor,
-              width: p.width,
-              height: p.height,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* ── Result card ─────────────────────────────────────────────── */}
       <motion.div
-        className="z-10 bg-slate-900/70 backdrop-blur-md rounded-[2rem] p-8 md:p-10 shadow-2xl max-w-md w-full text-center border border-white/20"
-        initial={{ scale: 0.75, y: 60, opacity: 0 }}
-        animate={{ scale: 1,    y: 0,  opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 220, damping: 24, delay: 0.05 }}
+        className="aot-panel p-10 max-w-md w-full border border-[#555] text-center relative"
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
       >
-        {/* Trophy + heading */}
-        <motion.div
-          className="text-7xl mb-2 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]"
-          initial={{ scale: 0, rotate: -15 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 18, delay: 0.2 }}
-        >
-          🏆
-        </motion.div>
-        <h1 className="text-4xl md:text-5xl font-black mb-1 text-white tracking-wide">
-          YOU WON!
-        </h1>
-        <p className="text-slate-400 mb-7 font-bold tracking-[0.2em] text-xs">
-          ALL PAIRS FOUND ✨
-        </p>
-
-        {/* Stat grid */}
-        <div className="grid grid-cols-2 gap-3 mb-8">
-          {stats.map((s, i) => (
-            <motion.div
-              key={s.label}
-              className={`bg-slate-800/50 backdrop-blur-sm p-4 rounded-2xl border ${s.border}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 + i * 0.08, type: 'spring', stiffness: 260, damping: 22 }}
+        <div className="mb-8">
+          <span className="font-sans text-sm tracking-[0.4em] text-[#999] uppercase font-bold">Operation Result</span>
+          <h2 className="text-5xl cinematic-title mt-2 mb-2">
+            MISSION COMPLETE
+          </h2>
+          
+          <div className="mt-6 flex flex-col items-center">
+            <span className="font-sans text-xs tracking-widest text-[#777] uppercase mb-1">Assigned Rank</span>
+            <motion.div 
+              className={`font-serif text-4xl font-bold tracking-[0.2em] ${rankColor} drop-shadow-[0_0_15px_currentColor]`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 1, type: 'spring' }}
             >
-              <p className="text-slate-400 text-[10px] font-black mb-1 uppercase tracking-widest">{s.label}</p>
-              <p className={`text-2xl font-black ${s.textCls}`}>{s.value}</p>
+              {rank}
             </motion.div>
-          ))}
+          </div>
+
+          {isHighScore && (
+            <motion.div 
+              className="mt-6 bg-[#7f1d1d] text-white font-sans font-bold uppercase tracking-widest px-6 py-2 border border-[#fca5a5] shadow-[0_0_20px_rgba(127,29,29,0.8)] inline-block"
+              animate={{ opacity: [1, 0.7, 1] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            >
+              New Record Set
+            </motion.div>
+          )}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex flex-col gap-2.5">
-          <motion.button
-            onClick={onPlayAgain}
-            whileHover={{ scale: 1.04, boxShadow: '0 0 20px rgba(255,255,255,0.2)' }} 
-            whileTap={{ scale: 0.96 }}
-            className="flex items-center justify-center gap-2 bg-white text-slate-900 font-black py-3 px-5 rounded-xl shadow-lg text-base transition-all"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55 }}
+        <div className="bg-black/40 border border-[#333] p-6 mb-10">
+          <div className="text-xs font-sans tracking-widest text-[#777] uppercase mb-1">Final Score</div>
+          <motion.div 
+            className="text-6xl font-serif font-bold text-white drop-shadow-lg mb-8"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
           >
-            <RotateCcw size={18} /> PLAY AGAIN
-          </motion.button>
-
-          <motion.div
-            className="grid grid-cols-2 gap-2.5"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65 }}
-          >
-            <motion.button
-              onClick={onChangeDifficulty}
-              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-              className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 text-white font-semibold py-2.5 px-3 rounded-lg transition-colors border border-white/10 text-xs"
-            >
-              <Grid size={14} /> Difficulty
-            </motion.button>
-            <motion.button
-              onClick={onChangeCategory}
-              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-              className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 text-white font-semibold py-2.5 px-3 rounded-lg transition-colors border border-white/10 text-xs"
-            >
-              <LayoutDashboard size={14} /> Category
-            </motion.button>
+            {result.score}
           </motion.div>
+          
+          <div className="grid grid-cols-2 gap-y-6 gap-x-4 text-left font-sans tracking-wider">
+            <div className="flex flex-col border-l-2 border-[#166534] pl-3">
+              <span className="text-[10px] font-bold text-[#777] uppercase">Time</span>
+              <span className="text-xl font-bold text-[#d1d5db]">{formatTime(result.time)}</span>
+            </div>
+            <div className="flex flex-col border-l-2 border-[#166534] pl-3">
+              <span className="text-[10px] font-bold text-[#777] uppercase">Moves</span>
+              <span className="text-xl font-bold text-[#d1d5db]">{result.moves}</span>
+            </div>
+            <div className="flex flex-col border-l-2 border-[#166534] pl-3">
+              <span className="text-[10px] font-bold text-[#777] uppercase">Max Combo</span>
+              <span className="text-xl font-bold text-[#d1d5db]">x{result.combo}</span>
+            </div>
+            <div className="flex flex-col border-l-2 border-[#166534] pl-3">
+              <span className="text-[10px] font-bold text-[#777] uppercase">Accuracy</span>
+              <span className="text-xl font-bold text-[#d1d5db]">{accuracy}%</span>
+            </div>
+          </div>
+        </div>
 
-          <motion.button
-            onClick={onHome}
-            className="flex items-center justify-center gap-2 mt-1 text-slate-400 hover:text-white transition-colors py-1.5 text-xs font-semibold"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.75 }}
-            whileHover={{ scale: 1.03 }}
-          >
-            <Home size={14} /> Back to Home
-          </motion.button>
+        <div className="flex flex-col gap-4">
+          <button onClick={onPlayAgain} className="w-full py-4 text-xl aot-btn">
+            Deploy Again
+          </button>
+          <button onClick={onHome} className="w-full py-4 text-lg aot-btn bg-[#222]" style={{ background: 'linear-gradient(135deg, #333, #111)'}}>
+            Return to Base
+          </button>
         </div>
       </motion.div>
     </motion.div>

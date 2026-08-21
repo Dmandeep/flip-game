@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
 import { difficulties } from '../data/difficulties';
 import type { DifficultyLevel } from '../data/difficulties';
 import type { Category } from '../data/categories';
+import { ChevronLeft } from 'lucide-react';
 
 type Props = {
   category: Category;
@@ -10,91 +10,70 @@ type Props = {
   onBack: () => void;
 };
 
-const diffStyles = [
-  { border: 'border-emerald-500/40 hover:border-emerald-400', glow: 'rgba(52,211,153,0.3)', text: 'text-emerald-400', label: 'Beginner friendly' },
-  { border: 'border-amber-500/40 hover:border-amber-400',   glow: 'rgba(251,191,36,0.3)',  text: 'text-amber-400',   label: 'Getting tricky' },
-  { border: 'border-orange-500/40 hover:border-orange-400', glow: 'rgba(249,115,22,0.3)',  text: 'text-orange-400',  label: 'Real challenge' },
-  { border: 'border-rose-500/40 hover:border-rose-400',     glow: 'rgba(244,63,94,0.3)',   text: 'text-rose-400',    label: 'Memory master' },
-];
-
-const containerVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, scale: 0.9, y: 30 },
-  show:   { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 240, damping: 22 } },
-};
-
 export const DifficultySelection: React.FC<Props> = ({ category, onSelect, onBack }) => {
+
   return (
     <motion.div
-      className="flex-1 flex flex-col p-4 max-w-4xl mx-auto w-full relative z-10"
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -40 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="flex-1 w-full flex flex-col items-center p-6 relative z-10 min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.5 }}
     >
-      <header className="flex items-center mb-6 mt-2">
-        <motion.button
-          onClick={onBack}
-          whileHover={{ scale: 1.15, x: -4 }}
-          whileTap={{ scale: 0.9 }}
-          className="p-2 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 transition-colors mr-4 text-white shadow-lg backdrop-blur-sm"
-        >
-          <ChevronLeft size={24} />
-        </motion.button>
-        <div>
-          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-tight flex items-center gap-3">
-            <span className="text-4xl drop-shadow-md">{category.icon}</span> Select Difficulty
-          </h2>
-          <p className="text-slate-400 font-medium tracking-wide mt-0.5 text-sm">How good is your memory?</p>
+      <div className="w-full max-w-5xl mt-12">
+        
+        {/* Header */}
+        <div className="flex items-center relative mb-16 border-b border-[#333] pb-6">
+          <button
+            onClick={onBack}
+            className="mr-6 p-3 aot-btn rounded-none flex items-center justify-center w-12 h-12"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <div className="flex flex-col">
+            <span className="text-red-700 font-sans tracking-[0.3em] text-sm font-bold uppercase mb-1">{category.name} Operations</span>
+            <h2 className="text-5xl cinematic-title">
+              Threat Level
+            </h2>
+          </div>
         </div>
-      </header>
 
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 gap-4"
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-      >
-        {difficulties.map((diff, i) => {
-          const style = diffStyles[i];
-          const pairs = (diff.cols * diff.rows) / 2;
-          return (
-            <motion.button
-              key={diff.id}
-              variants={cardVariants}
-              whileHover={{
-                scale: 1.04,
-                y: -4,
-                boxShadow: `0 15px 30px ${style.glow}`,
-              }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => onSelect(diff)}
-              className={`group relative flex flex-col items-center p-6 bg-slate-900/60 backdrop-blur-md rounded-[1.5rem] border-2 ${style.border} text-center overflow-hidden transition-all duration-300`}
-            >
-              {/* Ambient Hover Glow */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Difficulties Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {difficulties.map((diff: DifficultyLevel, i: number) => {
+            const pairCount = (diff.cols * diff.rows) / 2;
 
-              <h3 className={`text-3xl font-black mb-2 ${style.text} tracking-wide drop-shadow-md`}>
-                {diff.name}
-              </h3>
+            return (
+              <motion.button
+                key={diff.id}
+                onClick={() => onSelect(diff)}
+                className="group relative flex flex-col items-start p-8 aot-panel hover:bg-white/5 transition-colors duration-300 text-left"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                <div className="absolute inset-0 border border-white/5 pointer-events-none" />
+                <div className="absolute inset-[4px] border border-black/50 pointer-events-none" />
 
-              <div className="flex items-center justify-center gap-3 text-white/90 font-bold text-base mb-2 bg-white/5 px-5 py-1.5 rounded-full border border-white/10">
-                <span>{diff.cols} × {diff.rows}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                <span>{pairs} Pairs</span>
-              </div>
-
-              <p className="text-slate-400 text-[11px] font-semibold tracking-widest uppercase mt-1">
-                {style.label}
-              </p>
-            </motion.button>
-          );
-        })}
-      </motion.div>
+                <div className="text-3xl font-sans tracking-widest text-[#d1d5db] group-hover:text-white uppercase mb-8">
+                  {diff.name}
+                </div>
+                
+                <div className="flex flex-col gap-3 w-full mt-auto font-sans tracking-wider text-sm text-[#999]">
+                  <div className="flex justify-between items-center border-b border-[#333] pb-2">
+                    <span>Targets</span>
+                    <span className="text-white font-bold">{pairCount}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-[#333] pb-2">
+                    <span>Zone Size</span>
+                    <span className="text-white font-bold">{diff.cols}×{diff.rows}</span>
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
     </motion.div>
   );
 };

@@ -1,130 +1,136 @@
-import { motion } from 'framer-motion';
-import { Play, Settings } from 'lucide-react';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { useState } from 'react';
+import { SoundFX } from '../utils/sound';
 
 type Props = {
   onPlay: () => void;
   onSettings: () => void;
+  musicOn: boolean;
 };
 
-/* ── Floating particle emojis ─────────────────────────────────────────────── */
-const FLOATERS = [
-  { emoji: '🌸', top: '8%',  left: '8%',  size: '4rem', delay: 0,   dur: 4.2 },
-  { emoji: '⭐', top: '14%', right: '10%', size: '3.5rem', delay: 1,  dur: 5.1 },
-  { emoji: '🌙', bottom: '22%', left: '12%', size: '4rem', delay: 0.5, dur: 6.0 },
-  { emoji: '✨', bottom: '14%', right: '8%', size: '3.5rem', delay: 2,  dur: 4.6 },
-  { emoji: '🦋', top: '52%', left: '4%',  size: '3rem', delay: 1.5, dur: 5.5 },
-  { emoji: '🍃', top: '36%', right: '4%', size: '3rem', delay: 0.8, dur: 4.1 },
-  { emoji: '💫', top: '28%', left: '20%', size: '2.5rem', delay: 1.2, dur: 3.8 },
-  { emoji: '🎴', bottom: '35%', right: '18%', size: '2.5rem', delay: 2.5, dur: 5.0 },
-];
+// Falling Embers Component
+const Embers = () => {
+  const [embers] = useState<{ id: number; left: number; size: number; delay: number; duration: number; xOffsets: number[] }[]>(() => {
+    return Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      size: Math.random() * 6 + 2,
+      delay: Math.random() * 5,
+      duration: Math.random() * 4 + 3,
+      xOffsets: [0, Math.random() * 50 - 25, Math.random() * 50 - 25],
+    }));
+  });
 
-/* ── Demo card strip on the home screen ──────────────────────────────────── */
-const DEMO_CARDS = ['🎴', '🃏', '🎴', '🃏'];
-const DEMO_COLORS = [
-  'from-violet-500 to-indigo-600',
-  'from-fuchsia-500 to-pink-600',
-  'from-sky-500 to-blue-600',
-  'from-emerald-500 to-teal-600',
-];
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+      {embers.map((e) => (
+        <motion.div
+          key={e.id}
+          className="ember"
+          style={{ left: `${e.left}%`, width: e.size, height: e.size }}
+          initial={{ y: '110vh', opacity: 0, x: 0 }}
+          animate={{ y: '-10vh', opacity: [0, 1, 0], x: e.xOffsets }}
+          transition={{ duration: e.duration, delay: e.delay, repeat: Infinity, ease: 'linear' }}
+        />
+      ))}
+    </div>
+  );
+};
 
-export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings }) => {
+export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings, musicOn }) => {
+  const x = useMotionValue(0.5);
+  const y = useMotionValue(0.5);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    x.set(e.clientX / rect.width);
+    y.set(e.clientY / rect.height);
+  };
+
+  const xOffset = useTransform(x, [0, 1], [-20, 20]);
+  const yOffset = useTransform(y, [0, 1], [-20, 20]);
+  
+  const xOffsetFg = useTransform(x, [0, 1], [10, -10]);
+  const yOffsetFg = useTransform(y, [0, 1], [10, -10]);
+
+  const handleCommence = () => {
+    if (musicOn) {
+      SoundFX.playBGM();
+    }
+    onPlay();
+  };
+
   return (
     <motion.div
-      className="flex-1 flex flex-col items-center justify-center p-6 relative z-10 min-h-screen"
+      className="flex-1 w-full flex flex-col items-center justify-center relative z-10 min-h-screen overflow-hidden bg-black"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.35 }}
+      exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.1 }}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
+      onMouseMove={handleMouseMove}
     >
-      {/* ── Background floating emojis ─────────────────────────────── */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {FLOATERS.map((f, i) => (
-          <motion.div
-            key={i}
-            className="absolute opacity-20 select-none"
-            style={{ fontSize: f.size, top: f.top, left: (f as any).left, right: (f as any).right, bottom: (f as any).bottom }}
-            animate={{ y: [0, -14, 0], rotate: [0, i % 2 === 0 ? 10 : -10, 0] }}
-            transition={{ duration: f.dur, delay: f.delay, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            {f.emoji}
-          </motion.div>
-        ))}
-      </div>
+      {/* ── PARALLAX ANIME SCENE ── */}
+      <motion.div 
+        className="absolute inset-[-10%] z-0"
+        style={{ x: xOffset, y: yOffset }}
+      >
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-70" 
+          style={{ backgroundImage: 'url("/home-bg.png")' }}
+        />
+        
+        {/* Dark Vignette to make UI readable */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/80" />
+      </motion.div>
 
-      {/* ── Content ───────────────────────────────────────────────── */}
-      <div className="z-10 flex flex-col items-center text-center max-w-lg w-full gap-10">
+      <Embers />
 
+      <motion.div 
+        className="flex flex-col items-center justify-center max-w-3xl w-full text-center relative z-20 pointer-events-none"
+        style={{ x: xOffsetFg, y: yOffsetFg }}
+      >
         {/* Title */}
         <motion.div
-          className="relative"
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.05 }}
+          className="mb-16 flex flex-col items-center"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1, delay: 0.2 }}
         >
-          {/* Glow blob behind title */}
-          <div className="absolute inset-0 blur-[60px] bg-white/10 rounded-full scale-[2] pointer-events-none" />
-
-          <h1 className="relative text-7xl md:text-9xl font-black tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-br from-white via-indigo-200 to-pink-200 drop-shadow-lg mb-4">
-            MEMORY
-            <br />
-            FLIP
+          <h2 className="text-xl md:text-2xl text-red-600 tracking-[0.5em] font-sans font-bold mb-4 uppercase drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]">
+            Operation
+          </h2>
+          <h1 className="text-6xl md:text-9xl font-black cinematic-title text-white">
+            SHINGEKI
           </h1>
-          <motion.p
-            className="relative text-xl md:text-2xl font-bold text-white/80 tracking-widest uppercase"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-          >
-            Match &bull; Remember &bull; Win
-          </motion.p>
+          <h1 className="text-4xl md:text-7xl font-bold cinematic-title text-white/50 mt-2">
+            NO FLIP
+          </h1>
         </motion.div>
 
-        {/* Demo card row */}
-        <div className="flex gap-4 justify-center my-4">
-          {DEMO_CARDS.map((icon, i) => (
-            <motion.div
-              key={i}
-              className={`w-16 h-20 md:w-20 md:h-24 rounded-2xl bg-gradient-to-br ${DEMO_COLORS[i]} border-2 border-white/40 flex items-center justify-center shadow-2xl`}
-              initial={{ opacity: 0, y: 20, rotateY: 180 }}
-              animate={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ delay: 0.3 + i * 0.1, type: 'spring', stiffness: 220, damping: 22 }}
-              whileHover={{ scale: 1.15, rotateZ: 6, y: -6 }}
-              style={{ perspective: '600px', backfaceVisibility: 'hidden' }}
-            >
-              <span style={{ fontSize: '2.5rem' }}>{icon}</span>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Buttons */}
-        <div className="flex flex-col gap-4 w-full sm:w-64">
-          <motion.button
-            onClick={onPlay}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(255,255,255,0.4)' }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center gap-2 bg-white text-slate-900 text-lg md:text-xl font-black py-3 px-8 rounded-full shadow-[0_0_28px_rgba(255,255,255,0.2)] transition-all"
+        {/* Actions */}
+        <motion.div
+          className="flex flex-col gap-4 w-full max-w-sm mx-auto pointer-events-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.8 }}
+        >
+          <button
+            onClick={handleCommence}
+            className="w-full py-5 text-3xl aot-btn"
           >
-            <Play fill="currentColor" size={22} />
-            PLAY NOW
-          </motion.button>
-
-          <motion.button
+            COMMENCE
+          </button>
+          
+          <button
             onClick={onSettings}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            whileHover={{ scale: 1.05, boxShadow: '0 0 32px rgba(255,255,255,0.2)' }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center gap-2 bg-slate-800/50 backdrop-blur-md border border-white/20 text-white text-sm md:text-base font-bold py-3 px-6 rounded-full shadow-lg transition-all hover:bg-slate-700/50"
+            className="w-full py-4 text-xl aot-btn bg-[#2a2a2a]"
+            style={{ background: 'linear-gradient(135deg, #2a2a2a, #111)' }}
           >
-            <Settings size={18} />
-            SETTINGS & STATS
-          </motion.button>
-        </div>
-      </div>
+            SYSTEM CONFIG
+          </button>
+        </motion.div>
+
+      </motion.div>
     </motion.div>
   );
 };

@@ -1,96 +1,72 @@
 import { motion } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
 import { categories } from '../data/categories';
 import type { Category } from '../data/categories';
+import { ChevronLeft } from 'lucide-react';
 
 type Props = {
   onSelect: (category: Category) => void;
   onBack: () => void;
 };
 
-const categoryGlows: Record<string, string> = {
-  all:      'shadow-[0_0_30px_rgba(192,38,211,0.3)] border-fuchsia-500/40 hover:border-fuchsia-400',
-  fruits:   'shadow-[0_0_30px_rgba(244,63,94,0.3)] border-rose-500/40 hover:border-rose-400',
-  animals:  'shadow-[0_0_30px_rgba(16,185,129,0.3)] border-emerald-500/40 hover:border-emerald-400',
-  vehicles: 'shadow-[0_0_30px_rgba(59,130,246,0.3)] border-blue-500/40 hover:border-blue-400',
-  food:     'shadow-[0_0_30px_rgba(245,158,11,0.3)] border-amber-500/40 hover:border-amber-400',
-};
-
-const containerVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.07 } },
-  exit: { transition: { staggerChildren: 0.03, staggerDirection: -1 } },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  show:   { opacity: 1, y: 0,  scale: 1, transition: { type: 'spring', stiffness: 240, damping: 22 } },
-  exit:   { opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.2 } },
-};
+const ALL_CATEGORIES = categories;
 
 export const CategorySelection: React.FC<Props> = ({ onSelect, onBack }) => {
   return (
     <motion.div
-      className="flex-1 flex flex-col p-4 max-w-5xl mx-auto w-full relative z-10"
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -40 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="flex-1 w-full flex flex-col items-center p-6 relative z-10 min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.5 }}
     >
-      <header className="flex items-center mb-6 mt-2">
-        <motion.button
-          onClick={onBack}
-          whileHover={{ scale: 1.15, x: -4 }}
-          whileTap={{ scale: 0.9 }}
-          className="p-2 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 transition-colors mr-4 text-white shadow-lg backdrop-blur-sm"
-        >
-          <ChevronLeft size={24} />
-        </motion.button>
-        <div>
-          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-tight">Select Theme</h2>
-          <p className="text-slate-400 font-medium tracking-wide mt-0.5 text-sm">What would you like to match today?</p>
+      <div className="w-full max-w-5xl mt-12">
+        
+        {/* Header */}
+        <div className="flex items-center relative mb-16 border-b border-[#333] pb-6">
+          <button
+            onClick={onBack}
+            className="mr-6 p-3 aot-btn rounded-none flex items-center justify-center w-12 h-12"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <div className="flex flex-col">
+            <span className="text-red-700 font-sans tracking-[0.3em] text-sm font-bold uppercase mb-1">Target Identification</span>
+            <h2 className="text-5xl cinematic-title">
+              Select Regiment
+            </h2>
+          </div>
         </div>
-      </header>
 
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        exit="exit"
-      >
-        {categories.map(cat => {
-          const glowClass = categoryGlows[cat.id] || 'border-white/20 hover:border-white/40';
-          return (
-            <motion.button
-              key={cat.id}
-              variants={cardVariants}
-              whileHover={{ scale: 1.04, y: -4 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => onSelect(cat)}
-              className={`group relative flex flex-col items-center text-center p-5 bg-slate-900/60 backdrop-blur-md rounded-[1.5rem] border-2 ${glowClass} overflow-hidden transition-all duration-300`}
-            >
-              {/* Inner ambient glow on hover */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              {/* Icon Container */}
-              <div className="relative mb-3">
-                <div className="absolute inset-0 bg-white/10 blur-xl rounded-full scale-150 group-hover:bg-white/20 transition-colors duration-300" />
-                <motion.div
-                  className="relative text-5xl drop-shadow-xl z-10"
-                  whileHover={{ rotate: [0, -10, 10, -5, 5, 0], scale: 1.1 }}
-                  transition={{ duration: 0.5 }}
-                >
+        {/* Categories Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          {ALL_CATEGORIES.map((cat, i) => {
+            return (
+              <motion.button
+                key={cat.id}
+                onClick={() => onSelect(cat)}
+                className="group relative flex flex-col items-center justify-center p-12 aot-panel hover:bg-white/5 transition-colors duration-300"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                {/* Worn edge effect */}
+                <div className="absolute inset-0 border border-white/5 pointer-events-none" />
+                <div className="absolute inset-[4px] border border-black/50 pointer-events-none" />
+
+                <span className="text-6xl mb-6 opacity-80 group-hover:opacity-100 transition-opacity filter drop-shadow-[0_5px_5px_rgba(0,0,0,1)]">
                   {cat.icon}
-                </motion.div>
-              </div>
-              
-              <h3 className="text-xl font-black mb-1 text-white z-10 tracking-wide">{cat.name}</h3>
-              <p className="text-xs font-medium text-slate-400 z-10">{cat.description}</p>
-            </motion.button>
-          );
-        })}
-      </motion.div>
+                </span>
+                <span className="font-sans text-2xl tracking-widest text-[#d1d5db] group-hover:text-white transition-colors uppercase">
+                  {cat.name}
+                </span>
+                <span className="font-sans text-xs text-red-700 font-bold uppercase tracking-widest mt-2">
+                  {cat.id === 'mixed' ? 'Random Encounters' : `Class ${cat.items.length}`}
+                </span>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
     </motion.div>
   );
 };

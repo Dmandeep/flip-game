@@ -5,11 +5,11 @@ import { DifficultySelection } from './components/DifficultySelection';
 import { GameScreen } from './components/GameScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { SettingsScreen } from './components/SettingsScreen';
-import { BackgroundAnimation } from './components/BackgroundAnimation';
 import type { Category } from './data/categories';
 import type { DifficultyLevel } from './data/difficulties';
 import { StorageUtils } from './utils/storage';
 import type { GameSettings } from './utils/storage';
+import { SoundFX } from './utils/sound';
 import { AnimatePresence } from 'framer-motion';
 
 export type ScreenState = 'home' | 'categories' | 'difficulty' | 'game' | 'results' | 'settings';
@@ -36,6 +36,15 @@ function App() {
     document.documentElement.classList.toggle('dark', isDark);
   }, [settings.theme]);
 
+  /* ── Background Music sync ──────────────────────────────────────────── */
+  useEffect(() => {
+    if (settings.musicOn) {
+      SoundFX.playBGM();
+    } else {
+      SoundFX.stopBGM();
+    }
+  }, [settings.musicOn]);
+
   const navigateTo = (screen: ScreenState) => setCurrentScreen(screen);
 
   const saveSettings = (s: GameSettings) => {
@@ -44,14 +53,17 @@ function App() {
   };
 
   return (
-    <div className="w-full min-h-screen overflow-hidden flex flex-col relative transition-colors duration-300">
-      <BackgroundAnimation />
+    <div className="min-h-screen w-full relative overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+      {/* ── AOT Environment ─────────────────────────────────── */}
+      <div className="aot-bg" />
+      
       <AnimatePresence mode="wait">
         {currentScreen === 'home' && (
           <HomeScreen
             key="home"
             onPlay={() => navigateTo('categories')}
             onSettings={() => navigateTo('settings')}
+            musicOn={settings.musicOn}
           />
         )}
 
@@ -87,9 +99,8 @@ function App() {
           <ResultsScreen
             key="results"
             result={gameResult!}
+            difficulty={selectedDifficulty!}
             onPlayAgain={() => navigateTo('game')}
-            onChangeCategory={() => navigateTo('categories')}
-            onChangeDifficulty={() => navigateTo('difficulty')}
             onHome={() => navigateTo('home')}
           />
         )}
@@ -98,7 +109,7 @@ function App() {
           <SettingsScreen
             key="settings"
             settings={settings}
-            onSave={saveSettings}
+            onUpdate={saveSettings}
             onBack={() => navigateTo('home')}
           />
         )}

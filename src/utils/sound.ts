@@ -1,72 +1,142 @@
-/**
- * Sound effects for Memory Flip using the Web Audio API.
- * No external audio files needed — all sounds are synthesized.
- */
+class SoundManager {
+  private ctx: AudioContext | null = null;
+  private bgmAudio: HTMLAudioElement | null = null;
+  private erwinAudio: HTMLAudioElement | null = null;
 
-let audioCtx: AudioContext | null = null;
+  constructor() {
+    if (typeof window !== 'undefined') {
+      try {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          this.ctx = new AudioContextClass();
+        }
+      } catch {
+        console.warn('AudioContext not supported');
+      }
 
-function getCtx(): AudioContext {
-  if (!audioCtx) {
-    audioCtx = new AudioContext();
+      this.bgmAudio = new Audio('/bgm.mp3');
+      if (this.bgmAudio) {
+        this.bgmAudio.loop = true;
+        this.bgmAudio.volume = 1.0;
+      }
+      
+      this.erwinAudio = new Audio('/erwin.mp3');
+      if (this.erwinAudio) {
+        this.erwinAudio.volume = 1.0;
+      }
+    }
   }
-  return audioCtx;
+
+  private playTone(freq: number, type: OscillatorType, duration: number, vol = 0.1) {
+    if (!this.ctx) return;
+    
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+
+    const osc = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+    
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    
+    gainNode.gain.setValueAtTime(vol, this.ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+    
+    osc.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+    
+    osc.start();
+    osc.stop(this.ctx.currentTime + duration);
+  }
+
+  flip() {
+    // Sharp metallic swoosh
+    this.playTone(300, 'triangle', 0.1, 0.2);
+    setTimeout(() => this.playTone(600, 'sine', 0.1, 0.1), 50);
+  }
+
+  match() {
+    // Heavy Titan impact
+    this.playTone(150, 'square', 0.3, 0.3);
+    setTimeout(() => this.playTone(300, 'sawtooth', 0.4, 0.2), 100);
+  }
+
+  mismatch() {
+    // Blade clash
+    this.playTone(800, 'sawtooth', 0.2, 0.1);
+    setTimeout(() => this.playTone(400, 'square', 0.2, 0.1), 50);
+  }
+
+  slash() {
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    
+    // Sword slash (High frequency drop)
+    const osc = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+    
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.2);
+    
+    gainNode.gain.setValueAtTime(0.5, this.ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+    
+    osc.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+    
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.2);
+  }
+
+  vaporize() {
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+
+    // Titan steam (White noise approximation using high rate oscillators)
+    const osc = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+    
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+    // modulate frequency rapidly to create noise
+    osc.frequency.linearRampToValueAtTime(800, this.ctx.currentTime + 0.5);
+    
+    gainNode.gain.setValueAtTime(0.4, this.ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.8);
+    
+    osc.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+    
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.8);
+  }
+
+  win() {
+    this.playTone(440, 'sine', 0.2, 0.2);
+    setTimeout(() => this.playTone(554, 'sine', 0.2, 0.2), 200);
+    setTimeout(() => this.playTone(659, 'sine', 0.4, 0.2), 400);
+  }
+
+  playBGM() {
+    if (this.bgmAudio) {
+      this.bgmAudio.play().catch(() => {});
+    }
+  }
+
+  stopBGM() {
+    if (this.bgmAudio) {
+      this.bgmAudio.pause();
+    }
+  }
+
+  playErwin() {
+    if (this.erwinAudio) {
+      this.erwinAudio.currentTime = 0;
+      this.erwinAudio.play().catch(() => {});
+    }
+  }
 }
 
-function playTone(
-  frequency: number,
-  type: OscillatorType,
-  duration: number,
-  gainStart: number,
-  gainEnd: number,
-  delay = 0
-): void {
-  const ctx = getCtx();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.type = type;
-  osc.frequency.setValueAtTime(frequency, ctx.currentTime + delay);
-
-  gain.gain.setValueAtTime(gainStart, ctx.currentTime + delay);
-  gain.gain.exponentialRampToValueAtTime(
-    Math.max(gainEnd, 0.0001),
-    ctx.currentTime + delay + duration
-  );
-
-  osc.start(ctx.currentTime + delay);
-  osc.stop(ctx.currentTime + delay + duration);
-}
-
-export const SoundFX = {
-  /** Card flip — soft click */
-  flip(): void {
-    playTone(600, 'sine', 0.08, 0.2, 0.01);
-  },
-
-  /** Successful match — cheerful ascending chime */
-  match(): void {
-    playTone(523, 'triangle', 0.12, 0.3, 0.01, 0);
-    playTone(659, 'triangle', 0.12, 0.3, 0.01, 0.1);
-    playTone(784, 'triangle', 0.15, 0.3, 0.01, 0.2);
-  },
-
-  /** Wrong pair — low thud */
-  mismatch(): void {
-    playTone(150, 'sawtooth', 0.15, 0.25, 0.01);
-  },
-
-  /** All pairs matched — victory fanfare */
-  win(): void {
-    const notes = [523, 659, 784, 1047];
-    notes.forEach((freq, i) => {
-      playTone(freq, 'triangle', 0.2, 0.35, 0.01, i * 0.12);
-    });
-    // Final chord
-    playTone(523, 'sine', 0.5, 0.2, 0.01, 0.6);
-    playTone(659, 'sine', 0.5, 0.2, 0.01, 0.6);
-    playTone(784, 'sine', 0.5, 0.2, 0.01, 0.6);
-  },
-};
+export const SoundFX = new SoundManager();
