@@ -1,0 +1,18 @@
+{
+  "name": "Shingeki no Flip",
+  "short_name": "SNF Game",
+  "description": "An immersive Attack on Titan memory card game.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#111111",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
