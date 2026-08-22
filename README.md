@@ -1,75 +1,62 @@
-# 🃏 Memory Flip
+# ⚔️ Shingeki no Flip
 
-A beautiful anime-themed memory card-matching game built with **React**, **TypeScript**, **Tailwind CSS v4**, and **Framer Motion**.
+**Shingeki no Flip** is an immersive, highly-polished memory card game inspired by the legendary anime *Attack on Titan* (Shingeki no Kyojin). Test your memory, match characters, gear, and lore, and prove you have what it takes to join the Survey Corps!
 
-## ✨ Features
+### 🌍 **[Play the Live Game Here!](https://Dmandeep.github.io/flip-game/)** 🌍
 
-- 🎴 **Card matching gameplay** — flip cards to find matching pairs
-- 🎯 **4 difficulty levels** — Easy (4×4), Medium (5×4), Hard (6×6), Expert (8×6)
-- 🗂️ **4 categories** — Fruits, Animals, Vehicles, Food (+ Mixed)
-- 🔥 **Combo scoring** — chain matches to multiply your score
-- ⏱️ **Timer** — race against the clock
-- 📊 **Progress bar** — track pairs found vs total
-- 🔊 **Sound effects** — synthesized with the Web Audio API (no external files)
-- 💾 **Persistent stats** — best score, best time, best combo saved to localStorage
-- 🌙 **Dark / Light / System theme** support
-- ♿ **Reduced motion** accessibility option
-- 📱 **Fully responsive** — works on mobile and desktop
+---
 
-## 🛠 Tech Stack
+## 🌟 Features
+
+*   **📱 Fully Responsive & Mobile Optimized:** Play seamlessly on any screen size. Features dynamic grid scaling, smart viewport constraints, and touch-optimized controls.
+*   **📲 PWA Support (Installable):** Add the game directly to your phone's home screen. Play it in full-screen standalone mode like a native mobile app!
+*   **⚔️ Immersive Thematic Experience:** 
+    *   A cinematic **3-2-1** countdown before missions begin.
+    *   Manga-style UI elements, dark/gritty color palettes, and custom high-resolution SVG icons.
+    *   Dynamic screen-shake animations when you mismatch a pair.
+*   **🎚️ Tactical Difficulty System:**
+    *   Choose your threat level: **EASY (12 cards)** to **EXPERT (24 cards)**.
+    *   **Score Multipliers:** High risks yield high rewards. Play on Expert for a massive 3.0x score multiplier.
+    *   **Par Times & Time Bonuses:** Race against the clock. Beat the mission's Par Time to earn massive tactical time bonuses!
+*   **🎵 Audio & Haptic Feedback:** Fully integrated vaporize sound effects, dramatic BGM support, and mobile device vibration (haptics) on matches and mistakes.
+*   **⚡ Blazing Fast Performance:** Heavy use of `React.memo` and background image preloading ensures butter-smooth 60fps card flips even on low-end devices.
+
+---
+
+## 🛠️ Tech Stack
 
 | Tool | Purpose |
 |---|---|
-| React 19 | UI library |
-| TypeScript 6 | Type safety |
-| Vite 8 | Build tool |
-| Tailwind CSS v4 | Utility-first styling |
-| Framer Motion | Animations |
-| Lucide React | Icons |
-| Web Audio API | Synthesized sound effects |
+| React 19 | UI component architecture |
+| TypeScript | Strict type safety & intellisense |
+| Vite 8 | Lightning fast build tool |
+| Tailwind CSS v4 | Utility-first responsive styling |
+| Framer Motion | Fluid spring physics animations |
+| Lucide React | Clean minimal icons |
 
-## 🚀 Getting Started
+---
+
+## 🚀 Local Installation
+
+Want to run the game locally or contribute? Follow these steps:
 
 ```bash
+# Clone the repository
+git clone https://github.com/Dmandeep/flip-game.git
+cd flip-game
+
 # Install dependencies
 npm install
 
-# Start dev server
+# Start the development server
 npm run dev
 
 # Build for production
 npm run build
-
-# Preview production build
-npm run preview
 ```
 
-## 🎮 How to Play
+Open your browser and navigate to the URL provided in your terminal (usually `http://localhost:5173`).
 
-1. **Start Game** → choose a category → choose difficulty
-2. Click cards to **flip** them
-3. Find **matching pairs** — matching cards are removed from the board
-4. Chain matches for a **combo multiplier** on your score
-5. **Win** when all pairs are found!
+---
 
-## 📁 Project Structure
-
-```
-src/
-├── components/          # React UI components
-│   ├── Card.tsx         # Individual card with 3D flip animation
-│   ├── CategorySelection.tsx
-│   ├── DifficultySelection.tsx
-│   ├── GameScreen.tsx   # Main gameplay screen
-│   ├── HomeScreen.tsx
-│   ├── ResultsScreen.tsx
-│   └── SettingsScreen.tsx
-├── data/
-│   ├── categories.ts    # Category & item definitions
-│   └── difficulties.ts  # Grid size configs
-├── utils/
-│   ├── shuffle.ts       # Fisher-Yates shuffle
-│   ├── sound.ts         # Web Audio API sound effects
-│   └── storage.ts       # localStorage helpers
-└── App.tsx              # Screen state machine
-```
+*Shinzou Wo Sasageyo!* 🦅
