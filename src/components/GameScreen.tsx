@@ -117,9 +117,20 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
     if (gameState === 'game_over') {
       if (settings.soundOn) SoundFX.win();
       hapticFeedback([100, 50, 100, 50, 200]);
-      setTimeout(() => onWin({ time, moves, score, combo }), 1200);
+      
+      // Calculate Time Bonus
+      let finalScore = score;
+      let timeBonus = 0;
+      const timeRemaining = difficulty.parTime - time;
+      if (timeRemaining > 0) {
+        // 50 points per remaining second, scaled by difficulty
+        timeBonus = Math.round(timeRemaining * 50 * difficulty.multiplier);
+        finalScore += timeBonus;
+      }
+
+      setTimeout(() => onWin({ time, moves, score: finalScore, combo, timeBonus }), 1200);
     }
-  }, [gameState, onWin, settings.soundOn, time, moves, score, combo]);
+  }, [gameState, onWin, settings.soundOn, time, moves, score, combo, difficulty]);
 
   // Screen shake on mismatch for immersive feel
   useEffect(() => {

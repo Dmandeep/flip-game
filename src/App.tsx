@@ -20,6 +20,7 @@ export type GameResult = {
   moves: number;
   score: number;
   combo: number;
+  timeBonus?: number;
 };
 
 function App() {

@@ -68,6 +68,14 @@ export const DifficultySelection: React.FC<Props> = ({ category, onSelect, onBac
                     <span>Zone</span>
                     <span className="text-white font-bold">{diff.cols}×{diff.rows}</span>
                   </div>
+                  <div className="flex justify-between items-center border-b border-[#333] pb-1 sm:pb-2 text-[#a3e635]">
+                    <span>Score Multiplier</span>
+                    <span className="font-bold">{diff.multiplier}x</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-1 sm:pb-2 text-[#60a5fa]">
+                    <span>Par Time</span>
+                    <span className="font-bold">{diff.parTime}s</span>
+                  </div>
                 </div>
               </motion.button>
             );

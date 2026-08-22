@@ -114,7 +114,7 @@ export const useGameEngine = (category: Category, difficulty: DifficultyLevel, s
               return newMatched;
             });
             setFlippedIds([]);
-            setScore(s => s + (100 * combo));
+            setScore(s => s + Math.round(100 * combo * difficulty.multiplier));
             setCombo(c => c + 1);
           }, 600); // Wait for flip physics to settle
         } else {
@@ -124,7 +124,7 @@ export const useGameEngine = (category: Category, difficulty: DifficultyLevel, s
             if (soundOn) SoundFX.mismatch();
             setMismatchedIds([]);
             setCombo(1);
-            setScore(s => Math.max(0, s - 10));
+            setScore(s => Math.max(0, s - Math.round(10 * difficulty.multiplier)));
             setFlippedIds([]);
             setGameState('awaiting_input');
           }, 1000);

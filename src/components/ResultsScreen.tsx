@@ -109,13 +109,26 @@ export const ResultsScreen: React.FC<Props> = ({ result, difficulty, onPlayAgain
         <div className="bg-black/40 border border-[#333] p-4 sm:p-6 mb-6 sm:mb-10">
           <div className="text-[10px] sm:text-xs font-sans tracking-widest text-[#777] uppercase mb-1">Final Score</div>
           <motion.div 
-            className="text-4xl sm:text-6xl font-serif font-bold text-white drop-shadow-lg mb-6 sm:mb-8"
+            className="text-4xl sm:text-6xl font-serif font-bold text-white drop-shadow-lg mb-2"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
             {result.score}
           </motion.div>
+          
+          {!!result.timeBonus && result.timeBonus > 0 && (
+            <motion.div
+              className="text-[#60a5fa] font-sans text-xs sm:text-sm tracking-widest font-bold uppercase mb-6 sm:mb-8"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+            >
+              + {result.timeBonus} Time Bonus!
+            </motion.div>
+          )}
+          
+          {!result.timeBonus && <div className="mb-6 sm:mb-8" />}
           
           <div className="grid grid-cols-2 gap-y-4 sm:gap-y-6 gap-x-3 sm:gap-x-4 text-left font-sans tracking-wider">
             <div className="flex flex-col border-l-2 border-[#166534] pl-2 sm:pl-3">
