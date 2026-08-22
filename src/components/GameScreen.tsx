@@ -98,7 +98,7 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
       setCountdown("SHINZOU WO SASAGEYO!");
       if (settings.soundOn) SoundFX.slash(); // Dramatic start sound
       hapticFeedback([100, 50, 100]);
-      
+    } else if (countdown === "SHINZOU WO SASAGEYO!") {
       const t = setTimeout(() => {
         setCountdown(null);
         startPlay();
