@@ -95,7 +95,7 @@ export const useGameEngine = (category: Category, difficulty: DifficultyLevel, s
         const card1 = cards.find(c => c.id === newFlipped[0]);
         const card2 = cards.find(c => c.id === newFlipped[1]);
 
-        if (!card1 || !card2) return;
+        if (!card1 || !card2) return newFlipped;
 
         if (card1.itemId === card2.itemId) {
           // Match
@@ -132,7 +132,7 @@ export const useGameEngine = (category: Category, difficulty: DifficultyLevel, s
       }
       return newFlipped;
     });
-  }, [gameState, isPaused, flippedIds, matchedIds, cards, combo, soundOn, addTimeout, totalPairs]);
+  }, [gameState, isPaused, flippedIds, matchedIds, cards, combo, soundOn, addTimeout, totalPairs, difficulty.multiplier]);
 
   return {
     gameState,

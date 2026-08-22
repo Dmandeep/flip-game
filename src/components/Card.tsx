@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { SoundFX } from '../utils/sound';
 import { svgIconMap } from '../data/svgIcons';
 
@@ -278,7 +278,7 @@ export const CardComponent: React.FC<CardProps> = ({
   );
 };
 
-export const Card = React.memo(CardComponent, (prev, next) => {
+export const Card = memo(CardComponent, (prev, next) => {
   return (
     prev.card.id === next.card.id &&
     prev.card.isFlipped === next.card.isFlipped &&
