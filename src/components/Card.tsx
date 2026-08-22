@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { SoundFX } from '../utils/sound';
+import { svgIconMap } from '../data/svgIcons';
 
 export type CardData = {
   id: string;
@@ -168,6 +169,10 @@ export const Card: React.FC<CardProps> = ({
             >
               {card.image ? (
                 <img src={card.image} alt={card.name} className="w-full h-full object-cover rounded shadow-inner" referrerPolicy="no-referrer" />
+              ) : svgIconMap[card.icon] ? (
+                <div className="relative z-10 select-none drop-shadow-md" style={{ width: 'clamp(2.5rem, 6vw, 4rem)', height: 'clamp(2.5rem, 6vw, 4rem)' }}>
+                  {svgIconMap[card.icon]}
+                </div>
               ) : (
                 <span className="relative z-10 select-none drop-shadow-md" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>
                   {card.icon}
@@ -197,11 +202,15 @@ export const Card: React.FC<CardProps> = ({
                 className="absolute inset-0 z-40 texture-parchment flex flex-col items-center justify-center p-1 pointer-events-none"
                 style={{ clipPath: 'polygon(0 0, 100% 0, 0 100%)', borderRadius: '6px' }}
                 initial={{ x: 0, y: 0, opacity: 0, rotate: 0 }}
-                animate={card.isMatched ? { x: -60, y: -60, opacity: [1, 1, 0], rotate: -25, filter: "blur(8px) sepia(100%) hue-rotate(-30deg)" } : { opacity: 0 }}
-                transition={card.isMatched ? { delay: 0.2, duration: 0.8, ease: "easeOut" } : { duration: 0 }}
+                animate={card.isMatched ? { x: -40, y: -40, opacity: [1, 1, 0], rotate: -15, scale: [1, 1, 1.2], filter: ["blur(0px) brightness(1)", "blur(0px) brightness(1)", "blur(15px) brightness(2) grayscale(1)"] } : { opacity: 0 }}
+                transition={card.isMatched ? { delay: 0.2, duration: 1.0, ease: "easeOut" } : { duration: 0 }}
               >
                 {card.image ? (
                   <img src={card.image} alt={card.name} className="w-full h-full object-cover rounded shadow-inner" referrerPolicy="no-referrer" />
+                ) : svgIconMap[card.icon] ? (
+                  <div className="relative z-10 select-none" style={{ width: 'clamp(2.5rem, 6vw, 4rem)', height: 'clamp(2.5rem, 6vw, 4rem)' }}>
+                    {svgIconMap[card.icon]}
+                  </div>
                 ) : (
                   <span className="relative z-10 select-none" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>{card.icon}</span>
                 )}
@@ -217,11 +226,15 @@ export const Card: React.FC<CardProps> = ({
                 className="absolute inset-0 z-40 texture-parchment flex flex-col items-center justify-center p-1 pointer-events-none"
                 style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 100%)', borderRadius: '6px' }}
                 initial={{ x: 0, y: 0, opacity: 0, rotate: 0 }}
-                animate={card.isMatched ? { x: 60, y: 60, opacity: [1, 1, 0], rotate: 25, filter: "blur(8px) sepia(100%) hue-rotate(-30deg)" } : { opacity: 0 }}
-                transition={card.isMatched ? { delay: 0.2, duration: 0.8, ease: "easeOut" } : { duration: 0 }}
+                animate={card.isMatched ? { x: 40, y: 40, opacity: [1, 1, 0], rotate: 15, scale: [1, 1, 1.2], filter: ["blur(0px) brightness(1)", "blur(0px) brightness(1)", "blur(15px) brightness(2) grayscale(1)"] } : { opacity: 0 }}
+                transition={card.isMatched ? { delay: 0.2, duration: 1.0, ease: "easeOut" } : { duration: 0 }}
               >
                 {card.image ? (
                   <img src={card.image} alt={card.name} className="w-full h-full object-cover rounded shadow-inner" referrerPolicy="no-referrer" />
+                ) : svgIconMap[card.icon] ? (
+                  <div className="relative z-10 select-none" style={{ width: 'clamp(2.5rem, 6vw, 4rem)', height: 'clamp(2.5rem, 6vw, 4rem)' }}>
+                    {svgIconMap[card.icon]}
+                  </div>
                 ) : (
                   <span className="relative z-10 select-none" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>{card.icon}</span>
                 )}
@@ -229,6 +242,24 @@ export const Card: React.FC<CardProps> = ({
                   <p className="font-sans font-bold text-white text-[10px] uppercase text-center">{card.name}</p>
                 </div>
               </motion.div>
+            )}
+
+            {/* Titan Steam/Smoke Effect */}
+            {!reducedMotion && (
+              <motion.div
+                className="absolute inset-[-50%] bg-white rounded-full z-40 mix-blend-screen pointer-events-none blur-xl"
+                initial={{ opacity: 0, scale: 0.5, y: 0 }}
+                animate={card.isMatched ? { opacity: [0, 0.8, 0], scale: [0.5, 1.5, 2.5], y: [0, -40, -100] } : { opacity: 0 }}
+                transition={card.isMatched ? { delay: 0.4, duration: 1.2, ease: "easeOut" } : { duration: 0 }}
+              />
+            )}
+            {!reducedMotion && (
+              <motion.div
+                className="absolute inset-[-50%] bg-gray-300 rounded-full z-40 mix-blend-overlay pointer-events-none blur-2xl"
+                initial={{ opacity: 0, scale: 0.5, y: 0 }}
+                animate={card.isMatched ? { opacity: [0, 0.9, 0], scale: [0.5, 2, 3], y: [0, -20, -80] } : { opacity: 0 }}
+                transition={card.isMatched ? { delay: 0.5, duration: 1.5, ease: "easeOut" } : { duration: 0 }}
+              />
             )}
 
             {/* Impact Flash */}

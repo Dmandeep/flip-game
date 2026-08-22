@@ -91,7 +91,9 @@ export const useGameEngine = (category: Category, difficulty: DifficultyLevel, s
         const card1 = cards.find(c => c.id === newFlipped[0]);
         const card2 = cards.find(c => c.id === newFlipped[1]);
 
-        if (card1 && card2 && card1.itemId === card2.itemId) {
+        if (!card1 || !card2) return;
+
+        if (card1.itemId === card2.itemId) {
           // Match
           addTimeout(() => {
             if (soundOn) {
@@ -113,7 +115,7 @@ export const useGameEngine = (category: Category, difficulty: DifficultyLevel, s
           }, 600); // Wait for flip physics to settle
         } else {
           // Mismatch
-          setMismatchedIds([card1!.id, card2!.id]);
+          setMismatchedIds([card1.id, card2.id]);
           addTimeout(() => {
             if (soundOn) SoundFX.mismatch();
             setMismatchedIds([]);

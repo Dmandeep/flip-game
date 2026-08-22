@@ -19,7 +19,7 @@ const DEFAULT_STATS: GameStats = {
   gamesPlayed: 0,
   gamesWon: 0,
   bestScore: 0,
-  bestTime: 999999,
+  bestTime: 0,
   bestCombo: 0,
   totalMatches: 0,
   totalMoves: 0,

@@ -23,9 +23,9 @@ const titans = {
   items: [
     { id: 't1', name: 'Eren', icon: '💀', image: '/characters/t1.png' },
     { id: 't2', name: 'Mikasa', icon: '⚔️', image: '/characters/t2.jpg' },
-    { id: 't3', name: 'Armin', icon: '🧠', image: '/characters/t3.jpg' },
+    { id: 't3', name: 'Armin', icon: '🧠', image: '/characters/armin_arlelt.jpeg' },
     { id: 't4', name: 'Levi', icon: '🗡️', image: '/characters/t4.jpeg' },
-    { id: 't5', name: 'Erwin', icon: '🐎', image: '/characters/t5.jpg' },
+    { id: 't5', name: 'Erwin', icon: '🐎', image: '/characters/erwin_smith.jpeg' },
     { id: 't6', name: 'Hange', icon: '👓', image: '/characters/t6.webp' },
     { id: 't7', name: 'Reiner', icon: '🛡️', image: '/characters/t7.webp' },
     { id: 't8', name: 'Bertholdt', icon: '🔥', image: '/characters/t8.jpeg' },
@@ -102,6 +102,72 @@ const rations = {
   ]
 };
 
+const titanShifters = {
+  id: 'shifters',
+  name: 'Titan Shifters',
+  description: 'The Nine Titans',
+  icon: '⚡',
+  color: 'from-yellow-500 to-red-700',
+  items: [
+    { id: 's1', name: 'Attack Titan', icon: '💪' },
+    { id: 's2', name: 'Founding Titan', icon: '👑' },
+    { id: 's3', name: 'Colossal Titan', icon: '🔥' },
+    { id: 's4', name: 'Armored Titan', icon: '🛡️' },
+    { id: 's5', name: 'Female Titan', icon: '💎' },
+    { id: 's6', name: 'Beast Titan', icon: '🦧' },
+    { id: 's7', name: 'Jaw Titan', icon: '🦎' },
+    { id: 's8', name: 'Cart Titan', icon: '🐗' },
+    { id: 's9', name: 'War Hammer', icon: '💎' },
+    { id: 's10', name: 'Titan Shift', icon: '🔄' },
+    { id: 's11', name: 'Lightning', icon: '⚡' },
+    { id: 's12', name: 'Hardening', icon: '🌀' },
+  ]
+};
+
+const locations = {
+  id: 'locations',
+  name: 'Locations',
+  description: 'World of Paradis',
+  icon: '🏰',
+  color: 'from-blue-700 to-slate-900',
+  items: [
+    { id: 'loc1', name: 'Wall Maria', icon: '🏰' },
+    { id: 'loc2', name: 'Wall Rose', icon: '🌹' },
+    { id: 'loc3', name: 'Wall Sina', icon: '👑' },
+    { id: 'loc4', name: 'Shiganshina', icon: '🚪' },
+    { id: 'loc5', name: 'Trost District', icon: '🏛️' },
+    { id: 'loc6', name: 'Stohess', icon: '⛪' },
+    { id: 'loc7', name: 'Forest of Trees', icon: '🌲' },
+    { id: 'loc8', name: 'The Ocean', icon: '🌊' },
+    { id: 'loc9', name: 'Marley', icon: '🗼' },
+    { id: 'loc10', name: 'Liberio', icon: '🏚️' },
+    { id: 'loc11', name: 'Paths Realm', icon: '✨' },
+    { id: 'loc12', name: 'Fort Salta', icon: '⛰️' },
+  ]
+};
+
+const regiments = {
+  id: 'regiments',
+  name: 'Regiments',
+  description: 'Military Divisions',
+  icon: '🎖️',
+  color: 'from-green-700 to-green-950',
+  items: [
+    { id: 'reg1', name: 'Survey Corps', icon: '🦅' },
+    { id: 'reg2', name: 'Garrison', icon: '🌹' },
+    { id: 'reg3', name: 'Military Police', icon: '🔒' },
+    { id: 'reg4', name: 'Cadet Corps', icon: '🎖️' },
+    { id: 'reg5', name: 'War Flag', icon: '🏳️' },
+    { id: 'reg6', name: 'Battle Horn', icon: '📯' },
+    { id: 'reg7', name: 'ODM Gear', icon: '⚙️' },
+    { id: 'reg8', name: 'Formation', icon: '👥' },
+    { id: 'reg9', name: 'Orders', icon: '📋' },
+    { id: 'reg10', name: 'Memorial', icon: '🕯️' },
+    { id: 'reg11', name: 'Base Camp', icon: '🎪' },
+    { id: 'reg12', name: 'Helmet', icon: '🪖' },
+  ]
+};
+
 export const categories: Category[] = [
   {
     id: 'all',
@@ -109,10 +175,13 @@ export const categories: Category[] = [
     description: 'Full Attack on Titan Lore',
     icon: '🦅',
     color: 'from-red-700 to-zinc-900',
-    items: [...titans.items, ...arsenal.items, ...lore.items, ...rations.items]
+    items: [...titans.items, ...arsenal.items, ...lore.items, ...rations.items, ...titanShifters.items, ...locations.items, ...regiments.items]
   },
   titans,
   arsenal,
   lore,
-  rations
+  rations,
+  titanShifters,
+  locations,
+  regiments
 ];

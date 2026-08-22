@@ -36,6 +36,7 @@ export const SettingsScreen: React.FC<Props> = ({ settings, onUpdate, onBack }) 
   };
 
   const formatTime = (s: number) => {
+    if (s === 0) return '--';
     if (s < 60) return `${s}s`;
     return `${Math.floor(s / 60)}m ${s % 60}s`;
   };

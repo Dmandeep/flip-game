@@ -54,7 +54,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+    <div className="min-h-[100dvh] w-full relative overflow-x-hidden bg-[var(--background)] text-[var(--foreground)]">
       {/* ── AOT Environment ─────────────────────────────────── */}
       <div className="aot-bg" />
       <BackgroundAnimation />

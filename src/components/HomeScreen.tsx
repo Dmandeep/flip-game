@@ -57,12 +57,14 @@ export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings, musicOn }) => 
     if (musicOn) {
       SoundFX.playBGM();
     }
+    // Haptic feedback on mobile
+    try { if ('vibrate' in navigator) navigator.vibrate(50); } catch { /* ignore */ }
     onPlay();
   };
 
   return (
     <motion.div
-      className="flex-1 w-full flex flex-col items-center justify-center relative z-10 min-h-screen overflow-hidden bg-black"
+      className="flex-1 w-full flex flex-col items-center justify-center relative z-10 min-h-[100dvh] overflow-hidden bg-black"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.1 }}
@@ -86,44 +88,44 @@ export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings, musicOn }) => 
       <Embers />
 
       <motion.div 
-        className="flex flex-col items-center justify-center max-w-3xl w-full text-center relative z-20 pointer-events-none"
+        className="flex flex-col items-center justify-center max-w-3xl w-full text-center relative z-20 pointer-events-none px-4"
         style={{ x: xOffsetFg, y: yOffsetFg }}
       >
         {/* Title */}
         <motion.div
-          className="mb-16 flex flex-col items-center"
+          className="mb-10 sm:mb-16 flex flex-col items-center"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 1, delay: 0.2 }}
         >
-          <h2 className="text-xl md:text-2xl text-red-600 tracking-[0.5em] font-sans font-bold mb-4 uppercase drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]">
+          <h2 className="text-base sm:text-xl md:text-2xl text-red-600 tracking-[0.3em] sm:tracking-[0.5em] font-sans font-bold mb-3 sm:mb-4 uppercase drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]">
             Operation
           </h2>
-          <h1 className="text-6xl md:text-9xl font-black cinematic-title text-white">
+          <h1 className="text-5xl sm:text-7xl md:text-9xl font-black cinematic-title text-white">
             SHINGEKI
           </h1>
-          <h1 className="text-4xl md:text-7xl font-bold cinematic-title text-white/50 mt-2">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold cinematic-title text-white/50 mt-1 sm:mt-2">
             NO FLIP
           </h1>
         </motion.div>
 
         {/* Actions */}
         <motion.div
-          className="flex flex-col gap-4 w-full max-w-sm mx-auto pointer-events-auto"
+          className="flex flex-col gap-3 sm:gap-4 w-full max-w-sm mx-auto pointer-events-auto px-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.8 }}
         >
           <button
             onClick={handleCommence}
-            className="w-full py-5 text-3xl aot-btn"
+            className="w-full py-4 sm:py-5 text-2xl sm:text-3xl aot-btn active:scale-95 transition-transform"
           >
             COMMENCE
           </button>
           
           <button
             onClick={onSettings}
-            className="w-full py-4 text-xl aot-btn bg-[#2a2a2a]"
+            className="w-full py-3 sm:py-4 text-lg sm:text-xl aot-btn bg-[#2a2a2a] active:scale-95 transition-transform"
             style={{ background: 'linear-gradient(135deg, #2a2a2a, #111)' }}
           >
             SYSTEM CONFIG
