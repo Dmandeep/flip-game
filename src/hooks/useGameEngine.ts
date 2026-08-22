@@ -5,7 +5,7 @@ import type { Category } from '../data/categories';
 import { shuffleArray } from '../utils/shuffle';
 import { SoundFX } from '../utils/sound';
 
-export type GameState = 'idle' | 'dealing' | 'awaiting_input' | 'flipping' | 'evaluating' | 'game_over';
+export type GameState = 'idle' | 'dealing' | 'pre_game' | 'awaiting_input' | 'flipping' | 'evaluating' | 'game_over';
 
 export const useGameEngine = (category: Category, difficulty: DifficultyLevel, soundOn: boolean) => {
   const [cards, setCards] = useState<CardData[]>([]);
@@ -63,12 +63,16 @@ export const useGameEngine = (category: Category, difficulty: DifficultyLevel, s
     setIsPaused(false);
 
     // Staggered deal delay
-    addTimeout(() => setGameState('awaiting_input'), 100);
+    addTimeout(() => setGameState('pre_game'), 100);
   }, [category, totalPairs, clearAllTimeouts, addTimeout]);
+
+  const startPlay = useCallback(() => {
+    setGameState('awaiting_input');
+  }, []);
 
   // Timer loop (simplified for now, full rAF could go here)
   useEffect(() => {
-    if (isPaused || gameState === 'game_over' || gameState === 'dealing' || gameState === 'idle') return;
+    if (isPaused || gameState === 'game_over' || gameState === 'dealing' || gameState === 'idle' || gameState === 'pre_game') return;
     const interval = setInterval(() => setTime(t => t + 1), 1000);
     return () => clearInterval(interval);
   }, [isPaused, gameState]);
@@ -143,6 +147,7 @@ export const useGameEngine = (category: Category, difficulty: DifficultyLevel, s
     isPaused,
     setIsPaused,
     initGame,
+    startPlay,
     handleCardClick,
     totalPairs
   };

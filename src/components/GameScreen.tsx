@@ -68,12 +68,44 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
     isPaused,
     setIsPaused,
     initGame,
+    startPlay,
     handleCardClick,
     totalPairs
   } = useGameEngine(category, difficulty, settings.soundOn);
 
   const imagesToPreload = Array.from(new Set(category.items.map(item => item.image).filter(Boolean))) as string[];
   useImagePreloader(imagesToPreload);
+
+  const [countdown, setCountdown] = useState<number | string | null>(null);
+
+  useEffect(() => {
+    if (gameState === 'pre_game') {
+      setCountdown(3);
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    if (countdown === null) return;
+    
+    if (typeof countdown === 'number' && countdown > 0) {
+      if (settings.soundOn) {
+        // Option to play a tick sound here
+        hapticFeedback(30);
+      }
+      const t = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(t);
+    } else if (countdown === 0) {
+      setCountdown("SHINZOU WO SASAGEYO!");
+      if (settings.soundOn) SoundFX.slash(); // Dramatic start sound
+      hapticFeedback([100, 50, 100]);
+      
+      const t = setTimeout(() => {
+        setCountdown(null);
+        startPlay();
+      }, 1200);
+      return () => clearTimeout(t);
+    }
+  }, [countdown, settings.soundOn, startPlay]);
 
   const [screenShake, setScreenShake] = useState(false);
 
@@ -190,6 +222,29 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
 
       {/* ── Play Area ─────────────────────────────────────────────────── */}
       <div className={`flex-1 relative flex items-center justify-center ${gridPad} overflow-hidden perspective-1000 min-h-0`}>
+        {/* Countdown Overlay */}
+        <AnimatePresence>
+          {countdown !== null && (
+            <motion.div
+              className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, filter: 'blur(10px)' }}
+            >
+              <motion.div
+                key={String(countdown)}
+                initial={{ scale: 0.5, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 1.5, opacity: 0 }}
+                transition={{ type: 'spring', damping: 15, stiffness: 200 }}
+                className="text-6xl sm:text-8xl md:text-9xl font-black cinematic-title text-white text-center drop-shadow-[0_0_20px_rgba(220,38,38,0.8)]"
+              >
+                {countdown}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div 
           className={`grid ${gridGap} w-full h-full max-w-5xl mx-auto transform-style-3d`}
           style={gridStyle}
