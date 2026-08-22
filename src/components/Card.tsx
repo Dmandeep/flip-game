@@ -124,7 +124,7 @@ export const CardComponent: React.FC<CardProps> = ({
           >
             {/* The user's downloaded original logo */}
             <img 
-              src="/logo.jpg" 
+              src="./logo.jpg" 
               alt="Survey Corps Logo" 
               className="w-full h-full object-cover opacity-90 mix-blend-multiply"
               onError={(e) => {

@@ -78,7 +78,7 @@ export const HomeScreen: React.FC<Props> = ({ onPlay, onSettings, musicOn }) => 
       >
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-70" 
-          style={{ backgroundImage: 'url("/home-bg.png")' }}
+          style={{ backgroundImage: 'url("./home-bg.png")' }}
         />
         
         {/* Dark Vignette to make UI readable */}
