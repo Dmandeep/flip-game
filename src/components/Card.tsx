@@ -22,7 +22,7 @@ type CardProps = {
   soundOn: boolean;
 };
 
-export const Card: React.FC<CardProps> = ({
+export const CardComponent: React.FC<CardProps> = ({
   card,
   onClick,
   disabled,
@@ -277,3 +277,15 @@ export const Card: React.FC<CardProps> = ({
     </div>
   );
 };
+
+export const Card = React.memo(CardComponent, (prev, next) => {
+  return (
+    prev.card.id === next.card.id &&
+    prev.card.isFlipped === next.card.isFlipped &&
+    prev.card.isMatched === next.card.isMatched &&
+    prev.disabled === next.disabled &&
+    prev.reducedMotion === next.reducedMotion &&
+    prev.isMismatched === next.isMismatched &&
+    prev.soundOn === next.soundOn
+  );
+});

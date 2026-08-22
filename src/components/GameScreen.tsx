@@ -7,6 +7,7 @@ import { Card } from './Card';
 import type { GameResult } from '../App';
 import type { GameSettings } from '../utils/storage';
 import { useGameEngine } from '../hooks/useGameEngine';
+import { useImagePreloader } from '../hooks/useImagePreloader';
 import { SoundFX } from '../utils/sound';
 
 type Props = {
@@ -70,6 +71,9 @@ export const GameScreen: React.FC<Props> = ({ category, difficulty, settings, on
     handleCardClick,
     totalPairs
   } = useGameEngine(category, difficulty, settings.soundOn);
+
+  const imagesToPreload = Array.from(new Set(category.items.map(item => item.image).filter(Boolean))) as string[];
+  useImagePreloader(imagesToPreload);
 
   const [screenShake, setScreenShake] = useState(false);
 
